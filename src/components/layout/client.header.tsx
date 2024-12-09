@@ -5,12 +5,14 @@ import logo from '../../assets/logo.jpg';
 import { AiOutlineMenu, AiOutlineShoppingCart } from "react-icons/ai";
 import Link from "next/link";
 import OverlayDrawer from "@/components/overlay/overlay.drawer";
+import Cart from "@/components/cart/client.cart";
 
 export default function Header() {
     const [menuOpen, setMenuOpen] = useState(false);
+    const [cartOpen, setCartOpen] = useState(false);
 
     return (
-        <header className="bg-white shadow-md fixed w-full z-50 left-0 top-0">
+        <header className="bg-white shadow-md fixed w-full z-40 left-0 top-0">
             <div className="container mx-auto flex justify-between items-center py-3 px-6">
                 {/* Left Menu Icon */}
                 <button
@@ -33,16 +35,17 @@ export default function Header() {
 
                 {/* Cart Icon */}
                 <div className="relative">
-                    <Link href={'/cart'}>
+                    <button onClick={() => setCartOpen(true)}>
                         <AiOutlineShoppingCart className="text-2xl text-gray-700" />
                         <div className="absolute -top-1 -right-2 bg-yellow-400 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
                             1
                         </div>
-                    </Link>
+                    </button>
                 </div>
             </div>
 
             <OverlayDrawer menuOpen={menuOpen} setMenuOpen={setMenuOpen}/>
+            <Cart open={cartOpen} setOpen={setCartOpen}/>
         </header>
     );
 }

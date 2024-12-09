@@ -1,5 +1,7 @@
 interface IProduct {
-    id: number;
+    _id: string;
+    category_id: Array<string>;
+
     name: string;
     price: number;
     image: StaticImageData;

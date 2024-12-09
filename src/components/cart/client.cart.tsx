@@ -29,22 +29,21 @@ const products = [
     // More products...
 ]
 
-export default function Example() {
-    const [open, setOpen] = useState(true)
+export default function Cart({ open, setOpen }) {
 
     return (
-        <Dialog open={open} onClose={setOpen} className="relative z-10">
+        <Dialog open={open} onClose={setOpen} className="relative z-50">
             <DialogBackdrop
                 transition
-                className="fixed inset-0 bg-gray-500/75 transition-opacity duration-500 ease-in-out data-[closed]:opacity-0"
+                className="fixed inset-0 bg-gray-500/75 transition-opacity duration-300 ease-in-out data-[closed]:opacity-0"
             />
 
             <div className="fixed inset-0 overflow-hidden">
                 <div className="absolute inset-0 overflow-hidden">
-                    <div className="pointer-events-none fixed inset-y-0 right-0 flex max-w-full pl-10">
+                    <div className="pointer-events-none fixed inset-y-0 right-0 top-0 flex max-w-full pl-10">
                         <DialogPanel
                             transition
-                            className="pointer-events-auto w-screen max-w-md transform transition duration-500 ease-in-out data-[closed]:translate-x-full sm:duration-700"
+                            className="pointer-events-auto w-screen max-w-md transform transition duration-300 ease-in-out data-[closed]:translate-x-full sm:duration-300"
                         >
                             <div className="flex h-full flex-col overflow-y-scroll bg-white shadow-xl">
                                 <div className="flex-1 overflow-y-auto px-4 py-6 sm:px-6">
@@ -101,27 +100,27 @@ export default function Example() {
 
                                 <div className="border-t border-gray-200 px-4 py-6 sm:px-6">
                                     <div className="flex justify-between text-base font-medium text-gray-900">
-                                        <p>Subtotal</p>
+                                        <p>Tổng giá</p>
                                         <p>$262.00</p>
                                     </div>
-                                    <p className="mt-0.5 text-sm text-gray-500">Shipping and taxes calculated at checkout.</p>
+                                    <p className="mt-0.5 text-sm text-gray-500">Đã tính phụ phí và giá ship.</p>
                                     <div className="mt-6">
                                         <a
                                             href="#"
                                             className="flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-indigo-700"
                                         >
-                                            Checkout
+                                            Thanh toán
                                         </a>
                                     </div>
                                     <div className="mt-6 flex justify-center text-center text-sm text-gray-500">
                                         <p>
-                                            or{' '}
+                                            hoặc{' '}
                                             <button
                                                 type="button"
                                                 onClick={() => setOpen(false)}
                                                 className="font-medium text-indigo-600 hover:text-indigo-500"
                                             >
-                                                Continue Shopping
+                                                Tiếp tục xem hàng
                                                 <span aria-hidden="true"> &rarr;</span>
                                             </button>
                                         </p>

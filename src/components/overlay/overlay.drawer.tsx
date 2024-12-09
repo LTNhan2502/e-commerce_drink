@@ -9,7 +9,7 @@ export default function OverlayDrawer({ menuOpen, setMenuOpen }) {
     // const [open, setOpen] = useState(menuOpen)
 
     return (
-        <Dialog open={menuOpen} onClose={() => setMenuOpen(!menuOpen)} className="relative z-[11]">
+        <Dialog open={menuOpen} onClose={() => setMenuOpen(!menuOpen)} className="relative z-50">
             <DialogBackdrop
                 transition
                 className="fixed inset-0 bg-gray-500/75 transition-opacity duration-300 ease-in-out data-[closed]:opacity-0"
@@ -35,10 +35,7 @@ export default function OverlayDrawer({ menuOpen, setMenuOpen }) {
                                     </button>
                                 </div>
                             </TransitionChild>
-                            <div className="flex h-full flex-col overflow-y-scroll bg-white py-6 shadow-xl">
-                                <div className="px-4 sm:px-6">
-                                    <DialogTitle className="text-base font-semibold text-gray-900">Panel title</DialogTitle>
-                                </div>
+                            <div className="flex h-full flex-col overflow-y-scroll bg-white shadow-xl">
                                 <div className="relative mt-6 flex-1 px-4 sm:px-6">
                                     <div className='font-semibold w-full text-center text-lg mb-3'>
                                         <Link href={'/'} onClick={() => setMenuOpen(false)}>Trà sữa An tea</Link>
