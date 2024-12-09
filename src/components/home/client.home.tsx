@@ -1,11 +1,32 @@
+"use client"; // Thêm dòng này ở đầu file
 import Image from "next/image";
 import Header from "@/components/layout/client.header";
 import SearchBar from "@/components/home/client.searchbar";
 import menuImg from '../../assets/menu-image.webp';
 import traSua from '../../assets/trasua.webp';
 import ProductPage from "@/components/home/client.products";
+import { useEffect, useState } from "react";
+import { getMenu } from "@/utils/menuServices";
 
 const HomePage = () => {
+    const [menu, setMenu] = useState([]);
+
+   useEffect(() => {
+        const fetchMenu = async () => {
+            try {
+                const data = await getMenu(1, 10);
+                setMenu(data);
+            } catch (error) {
+                console.error("Error fetching menu:", error);
+            }
+        };
+
+        fetchMenu();
+    }, []);
+
+    console.log(menu);
+    
+
     const products: IProduct[] = [
         { id: 1, name: "Trà sữa ANTEA thái xanh", price: 30000, image: traSua, category: "Trà Sữa", status: "best" },
         { id: 2, name: "Trà sữa ANTEA truyền thống", price: 30000, image: traSua, category: "Trà Sữa", status: "best" },
