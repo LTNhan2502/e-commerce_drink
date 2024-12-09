@@ -9,8 +9,8 @@ import { getMenu } from "@/utils/menuServices";
 import { getCategory } from "@/utils/categoryServices";
 
 const HomePage = () => {
-    const [menu, setMenu] = useState([]);
-    const [allCategories, setAllCategories] = useState([]);
+    const [menu, setMenu] = useState<IProduct[]>([]);
+    const [allCategories, setAllCategories] = useState<ICategory[]>([]);
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
@@ -33,6 +33,9 @@ const HomePage = () => {
 
         fetchData();
     }, []);
+
+    console.log(loading)
+    console.log(">>Check all categories", allCategories);
 
     return (
         <>

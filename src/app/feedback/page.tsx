@@ -1,9 +1,6 @@
 'use client'
 
-import { useState } from 'react'
-
 export default function FeedbackPage() {
-    const [agreed, setAgreed] = useState(false)
 
     return (
         <div className="isolate bg-white px-6 py-16 sm:py-16 lg:px-8">

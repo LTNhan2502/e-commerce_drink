@@ -1,35 +1,39 @@
 'use client'
 
-import { useState } from 'react'
 import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/react'
 import { XMarkIcon } from '@heroicons/react/24/outline'
+import Image from "next/image";
+import React from "react";
 
-const products = [
-    {
-        id: 1,
-        name: 'Throwback Hip Bag',
-        href: '#',
-        color: 'Salmon',
-        price: '$90.00',
-        quantity: 1,
-        imageSrc: 'https://tailwindui.com/plus/img/ecommerce-images/shopping-cart-page-04-product-01.jpg',
-        imageAlt: 'Salmon orange fabric pouch with match zipper, gray zipper pull, and adjustable hip belt.',
-    },
-    {
-        id: 2,
-        name: 'Medium Stuff Satchel',
-        href: '#',
-        color: 'Blue',
-        price: '$32.00',
-        quantity: 1,
-        imageSrc: 'https://tailwindui.com/plus/img/ecommerce-images/shopping-cart-page-04-product-02.jpg',
-        imageAlt:
-            'Front of satchel with blue canvas body, black straps and handle, drawstring top, and front zipper pouch.',
-    },
-    // More products...
-]
-
-export default function Cart({ open, setOpen }) {
+interface CartProps {
+    open: boolean;
+    setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+}
+const Cart: React.FC<CartProps> = ({ open, setOpen }) => {
+    const products = [
+        {
+            id: 1,
+            name: 'Throwback Hip Bag',
+            href: '#',
+            color: 'Salmon',
+            price: '$90.00',
+            quantity: 1,
+            imageSrc: 'https://tailwindui.com/plus/img/ecommerce-images/shopping-cart-page-04-product-01.jpg',
+            imageAlt: 'Salmon orange fabric pouch with match zipper, gray zipper pull, and adjustable hip belt.',
+        },
+        {
+            id: 2,
+            name: 'Medium Stuff Satchel',
+            href: '#',
+            color: 'Blue',
+            price: '$32.00',
+            quantity: 1,
+            imageSrc: 'https://tailwindui.com/plus/img/ecommerce-images/shopping-cart-page-04-product-02.jpg',
+            imageAlt:
+                'Front of satchel with blue canvas body, black straps and handle, drawstring top, and front zipper pouch.',
+        },
+        // More products...
+    ]
 
     return (
         <Dialog open={open} onClose={setOpen} className="relative z-50">
@@ -68,7 +72,7 @@ export default function Cart({ open, setOpen }) {
                                                 {products.map((product) => (
                                                     <li key={product.id} className="flex py-6">
                                                         <div className="size-24 shrink-0 overflow-hidden rounded-md border border-gray-200">
-                                                            <img alt={product.imageAlt} src={product.imageSrc} className="size-full object-cover" />
+                                                            <Image alt={product.imageAlt} src={product.imageSrc} className="size-full object-cover" />
                                                         </div>
 
                                                         <div className="ml-4 flex flex-1 flex-col">
@@ -134,3 +138,5 @@ export default function Cart({ open, setOpen }) {
         </Dialog>
     )
 }
+
+export default Cart;

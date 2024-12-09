@@ -5,8 +5,12 @@ import Link from "next/link";
 import Image from "next/image";
 import {getFile} from "@/utils/fileServices";
 
+interface IProductWithImage extends IProduct {
+    imageURL?: string;
+}
+
 const ProductPage: React.FC<{ category: string; products: IProduct[] }> = ({ category, products }) => {
-    const [productsWithImage, setProductsWithImage] = useState([]);
+    const [productsWithImage, setProductsWithImage] = useState<IProductWithImage[]>([]);
     console.log(">>Check props products", products)
 
     useEffect(() => {
@@ -30,7 +34,7 @@ const ProductPage: React.FC<{ category: string; products: IProduct[] }> = ({ cat
         };
 
         fetchImageURLs();
-    }, [])
+    }, [products])
 
     console.log(">>Check imageURL", productsWithImage)
 
@@ -42,19 +46,19 @@ const ProductPage: React.FC<{ category: string; products: IProduct[] }> = ({ cat
                     <Link href={`product/${product._id}`} key={product._id} className='w-1/2 pe-3 mb-3 last:mb-16'>
                         <div className='rounded-lg w-full mb-2 overflow-hidden relative'>
                             <Image
-                                src={product.imageURL}
+                                src={product.imageURL as string}
                                 alt={product.name}
                                 width={150}
                                 height={150}
                                 className='w-full'
                             />
-                            {product.status === 'best' ? (
+                            {/*{product.status === 'best' ? (*/}
+                            {/*) : ''}*/}
                                 <div className='absolute flex justify-center items-center border-[#0bf0f4] border-solid rounded-full size-10 top-[-8px] right-[-8px] w-[80px] h-[80px] text-white font-bold text-sm rotate-[30deg] z-[5] shadow-md'>
                                     <div className='relative flex justify-center items-center border border-solid rounded-full w-[40px] h-[40px]'>
                                         <span className='absolute text-center text-[10px] font-bold'>BEST SELLER</span>
                                     </div>
                                 </div>
-                            ) : ''}
                         </div>
                         <p className='font-semibold mb-2'>{product.name}</p>
                         <p className='font-semibold mb-2'>{product.price}</p>

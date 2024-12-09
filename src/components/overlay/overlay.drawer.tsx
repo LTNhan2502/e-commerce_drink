@@ -1,11 +1,16 @@
 'use client'
 
-import { useState } from 'react'
-import { Dialog, DialogBackdrop, DialogPanel, DialogTitle, TransitionChild } from '@headlessui/react'
+import { Dialog, DialogBackdrop, DialogPanel, TransitionChild } from '@headlessui/react'
 import { XMarkIcon } from '@heroicons/react/24/outline'
 import Link from "next/link";
+import React from "react";
 
-export default function OverlayDrawer({ menuOpen, setMenuOpen }) {
+interface DrawerProps {
+    menuOpen: boolean;
+    setMenuOpen: (open: boolean) => void;
+}
+
+const OverlayDrawer: React.FC<DrawerProps> = ({ menuOpen, setMenuOpen }) => {
     // const [open, setOpen] = useState(menuOpen)
 
     return (
@@ -60,3 +65,5 @@ export default function OverlayDrawer({ menuOpen, setMenuOpen }) {
         </Dialog>
     )
 }
+
+export default OverlayDrawer;

@@ -1,25 +1,8 @@
-/*
-  This example requires some changes to your config:
-
-  ```
-  // tailwind.config.js
-  module.exports = {
-    // ...
-    theme: {
-      extend: {
-        gridTemplateRows: {
-          '[auto,auto,1fr]': 'auto auto 1fr',
-        },
-      },
-    },
-  }
-  ```
-*/
 'use client'
 
 import { useState } from 'react'
-import { StarIcon } from '@heroicons/react/20/solid'
-import { Radio, RadioGroup } from '@headlessui/react'
+import Image from "next/image";
+import {Radio, RadioGroup} from "@headlessui/react";
 
 const product = {
     name: 'Basic Tee 6-Pack',
@@ -70,15 +53,15 @@ const product = {
 
     ],
 }
-const reviews = { href: '#', average: 4, totalCount: 117 }
 
-function classNames(...classes) {
+function classNames(...classes: (string | undefined)[]): string {
     return classes.filter(Boolean).join(' ')
 }
 
 export default function ProductDetail({ params }: { params: { id: number } }) {
     const [selectedSize, setSelectedSize] = useState(product.sizes[2])
     const [selectedTopping, setSelectedTopping] = useState(product.sizes[2])
+    console.log(params)
 
     return (
         <div className="bg-white">
@@ -123,7 +106,7 @@ export default function ProductDetail({ params }: { params: { id: number } }) {
                         className="lg:col-span-2 lg:col-start-1 lg:border-r lg:border-gray-200 lg:pr-8">
                         {/* Image */}
                         {/*<div className="mx-auto mt-6 max-w-2xl sm:px-6 lg:max-w-7xl lg:px-8 ">*/}
-                            <img
+                            <Image
                                 alt={product.images[3].alt}
                                 src={product.images[3].src}
                                 className="aspect-[4/5] size-full object-cover sm:rounded-lg lg:aspect-[3/4] rounded-lg"

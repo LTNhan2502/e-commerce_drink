@@ -7,6 +7,7 @@ const getEvaluate = async (current, pageSize) => {
 
 const postEvaluate = async (name, phone, content, star) => {
    const { name, phone, content, star } = data;
+   console.log(star)
    const res = await axiosClient.post('/evaluate', data);
    return res.data;
 };

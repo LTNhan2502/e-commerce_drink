@@ -49,7 +49,7 @@ const SearchBar: React.FC<ISearchBar> = ({ categories }) => {
                 {isDropVisible && (
                     <div className={`fixed inset-0 z-50 w-screen flex justify-center items-end`} onClick={() => setIsDropVisible(false)}>
                         <div className='w-full rounded-xl p-6 backdrop-blur-2xl'>
-                            {categories.map((category: string, index) => (
+                            {categories.map((category, index) => (
                                 <button
                                     onClick={() => handleCategorySelect(category)}
                                     key={index}
