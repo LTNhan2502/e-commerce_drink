@@ -20,3 +20,7 @@ interface ICategory {
     updatedAt: Date;
     __v: number;
 }
+
+interface IProductWithImage extends IProduct {
+    imageURL?: string;
+}

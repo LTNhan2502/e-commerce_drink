@@ -1,8 +1,11 @@
 'use client'
 
-import { useState } from 'react'
+import {useEffect, useState} from 'react'
 import Image from "next/image";
 import {Radio, RadioGroup} from "@headlessui/react";
+import {getSize} from "@/utils/sizeServices";
+import {getTopping} from "@/utils/toppingServices";
+import {getOneMenu} from "@/utils/menuServices";
 
 const product = {
     name: 'Basic Tee 6-Pack',
@@ -61,7 +64,35 @@ function classNames(...classes: (string | undefined)[]): string {
 export default function ProductDetail({ params }: { params: { id: number } }) {
     const [selectedSize, setSelectedSize] = useState(product.sizes[2])
     const [selectedTopping, setSelectedTopping] = useState(product.sizes[2])
-    console.log(params)
+    const [menu, setMenu] = useState([])
+    const [size, setSize] = useState([])
+    const [topping, setTopping] = useState([])
+    const [loading, setLoading] = useState(false)
+
+    useEffect(() => {
+        const fetchSizeAndTopping = async() => {
+            setLoading(true)
+            try {
+                const [menuRes, sizeRes, toppingRes] = await Promise.all([
+                    getOneMenu(params.id),
+                    getSize(),
+                    getTopping(),
+                ])
+                setMenu(menuRes.data)
+                setSize(sizeRes.data)
+                setTopping(toppingRes.data)
+            }catch(error){
+                console.log("Failed to fetch size and topping", error)
+            }finally {
+                setLoading(false)
+            }
+        }
+
+        fetchSizeAndTopping()
+    }, [params.id]);
+
+    console.log(menu, size, topping)
+    console.log(">>Check params", params.id)
 
     return (
         <div className="bg-white">
@@ -89,10 +120,9 @@ export default function ProductDetail({ params }: { params: { id: number } }) {
                             </li>
                         ))}
                         <li className="text-sm">
-                            <a href={product.href} aria-current="page"
-                               className="font-medium text-gray-500 hover:text-gray-600">
+                            <p className="font-medium text-gray-500 hover:text-gray-600">
                                 {product.name}
-                            </a>
+                            </p>
                         </li>
                     </ol>
                 </nav>
@@ -107,8 +137,10 @@ export default function ProductDetail({ params }: { params: { id: number } }) {
                         {/* Image */}
                         {/*<div className="mx-auto mt-6 max-w-2xl sm:px-6 lg:max-w-7xl lg:px-8 ">*/}
                             <Image
-                                alt={product.images[3].alt}
+                                alt={menu.name}
                                 src={product.images[3].src}
+                                width={150}
+                                height={150}
                                 className="aspect-[4/5] size-full object-cover sm:rounded-lg lg:aspect-[3/4] rounded-lg"
                             />
                         {/*</div>*/}
@@ -117,10 +149,10 @@ export default function ProductDetail({ params }: { params: { id: number } }) {
                     {/* Options */}
                     <div className="mt-4 lg:row-span-3 lg:mt-0">
                         <div className="lg:col-span-2 lg:border-r lg:border-gray-200 lg:pr-8">
-                            <h1 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">{product.name}</h1>
+                            <h1 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">{menu.name}</h1>
                         </div>
                         <h2 className="sr-only">Thông tin sản phẩm</h2>
-                        <p className="text-3xl tracking-tight text-gray-900">{product.price}</p>
+                        <p className="text-3xl tracking-tight text-gray-900">{menu.price}đ</p>
 
                         {/* Reviews */}
                         <form className="mt-10">
@@ -136,20 +168,20 @@ export default function ProductDetail({ params }: { params: { id: number } }) {
                                         onChange={setSelectedSize}
                                         className="grid grid-cols-4 gap-4 sm:grid-cols-8 lg:grid-cols-4"
                                     >
-                                        {product.sizes.map((size) => (
+                                        {size.map((size) => (
                                             <Radio
                                                 key={size.name}
                                                 value={size}
-                                                disabled={!size.inStock}
+                                                disabled={menu.size_id !== size._id}
                                                 className={classNames(
-                                                    size.inStock
+                                                    menu.size_id === size._id
                                                         ? 'cursor-pointer bg-white text-gray-900 shadow-sm'
                                                         : 'cursor-not-allowed bg-gray-50 text-gray-200',
                                                     'group relative flex items-center justify-center rounded-md border px-4 py-3 text-sm font-medium uppercase hover:bg-gray-50 focus:outline-none data-[focus]:ring-2 data-[focus]:ring-indigo-500 sm:flex-1 sm:py-6',
                                                 )}
                                             >
                                                 <span>{size.name}</span>
-                                                {size.inStock ? (
+                                                {menu.size_id === size._id ? (
                                                     <span
                                                         aria-hidden="true"
                                                         className="pointer-events-none absolute -inset-px rounded-md border-2 border-transparent group-data-[focus]:border group-data-[checked]:border-amber-400"
@@ -188,20 +220,20 @@ export default function ProductDetail({ params }: { params: { id: number } }) {
                                         onChange={setSelectedTopping}
                                         className="grid grid-cols-4 gap-4 sm:grid-cols-8 lg:grid-cols-4"
                                     >
-                                        {product.topping.map((topping) => (
+                                        {topping.map((topping) => (
                                             <Radio
                                                 key={topping.name}
                                                 value={topping}
-                                                disabled={!topping.inStock}
+                                                disabled={!topping._id.includes(menu.topping_id)}
                                                 className={classNames(
-                                                    topping.inStock
+                                                    topping._id.includes(menu.topping_id)
                                                         ? 'cursor-pointer bg-white text-gray-900 shadow-sm'
                                                         : 'cursor-not-allowed bg-gray-50 text-gray-200',
                                                     'group relative flex items-center justify-center rounded-md border px-4 py-3 text-sm font-medium uppercase hover:bg-gray-50 focus:outline-none data-[focus]:ring-2 data-[focus]:ring-amber-400 sm:flex-1 sm:py-6',
                                                 )}
                                             >
                                                 <span>{topping.name}</span>
-                                                {topping.inStock ? (
+                                                {topping._id.includes(menu.topping_id) ? (
                                                     <span
                                                         aria-hidden="true"
                                                         className="pointer-events-none absolute -inset-px rounded-md border-2 border-transparent group-data-[focus]:border group-data-[checked]:border-amber-400"

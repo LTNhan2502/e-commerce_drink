@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     images: {
-        domains: ['res.cloudinary.com'], // Thêm tên miền res.cloudinary.com
+        domains: ['res.cloudinary.com', 'order-drink.vercel.app', 'tailwindui.com'],
     },
 };
 

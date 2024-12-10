@@ -2,11 +2,10 @@ import axios from 'axios';
 
 const axiosClient = axios.create({
    baseURL: 'https://order-drink.vercel.app',
-   timeout: 10000,
+   credentials: 'include',
    headers: {
       'Content-Type': 'application/json'
    },
-   withCredentials: true,
 });
 
 export default axiosClient;

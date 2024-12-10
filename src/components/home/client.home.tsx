@@ -35,7 +35,7 @@ const HomePage = () => {
     }, []);
 
     console.log(loading)
-    console.log(">>Check all categories", allCategories);
+    console.log(">>Check all products", menu);
 
     return (
         <>
