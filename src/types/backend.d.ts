@@ -24,3 +24,22 @@ interface ICategory {
 interface IProductWithImage extends IProduct {
     imageURL?: string;
 }
+
+interface ISize {
+    _id: string;
+    size: string;
+    createdAt: Date;
+    updatedAt: Date;
+    deleted: boolean;
+    __v: number;
+}
+
+interface ITopping {
+    _id: string;
+    name: string;
+    price: number;
+    createdAt: Date;
+    updatedAt: Date;
+    deleted: boolean;
+    __v: number;
+}

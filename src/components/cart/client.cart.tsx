@@ -5,7 +5,6 @@ import { XMarkIcon } from '@heroicons/react/24/outline'
 import Image from "next/image";
 import React from "react";
 import {useCart} from "@/library/cart.context";
-import imageCart from '../../assets/trasua.webp';
 
 interface CartProps {
     open: boolean;

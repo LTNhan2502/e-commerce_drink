@@ -4,11 +4,10 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { getFile } from "@/utils/fileServices";
-import {useCart} from "@/library/cart.context";
 
 const ProductPage: React.FC<{ category: string; products: IProduct[] }> = ({ category, products }) => {
     const [productsWithImage, setProductsWithImage] = useState<IProductWithImage[]>([]);
-    const { addProduct } = useCart()
+    // const { addProduct } = useCart()
 
     useEffect(() => {
         const fetchImageURLs = async () => {

@@ -64,9 +64,9 @@ function classNames(...classes: (string | undefined)[]): string {
 export default function ProductDetail({ params }: { params: { id: number } }) {
     const [selectedSize, setSelectedSize] = useState(product.sizes[2])
     const [selectedTopping, setSelectedTopping] = useState(product.sizes[2])
-    const [menu, setMenu] = useState([])
-    const [size, setSize] = useState([])
-    const [topping, setTopping] = useState([])
+    const [menu, setMenu] = useState<IProduct[]>([])
+    const [size, setSize] = useState<ISize[]>([])
+    const [topping, setTopping] = useState<ITopping[]>([])
     const [loading, setLoading] = useState(false)
 
     useEffect(() => {
@@ -93,51 +93,20 @@ export default function ProductDetail({ params }: { params: { id: number } }) {
 
     console.log(menu, size, topping)
     console.log(">>Check params", params.id)
+    console.log(loading)
 
     return (
         <div className="bg-white">
-            <div className="pt-6">
-                <nav aria-label="Breadcrumb">
-                    <ol role="list"
-                        className="mx-auto flex max-w-2xl items-center space-x-2 px-4 sm:px-6 lg:max-w-7xl lg:px-8">
-                        {product.breadcrumbs.map((breadcrumb) => (
-                            <li key={breadcrumb.id}>
-                                <div className="flex items-center">
-                                    <a href={breadcrumb.href} className="mr-2 text-sm font-medium text-gray-900">
-                                        {breadcrumb.name}
-                                    </a>
-                                    <svg
-                                        fill="currentColor"
-                                        width={16}
-                                        height={20}
-                                        viewBox="0 0 16 20"
-                                        aria-hidden="true"
-                                        className="h-5 w-4 text-gray-300"
-                                    >
-                                        <path d="M5.697 4.34L8.98 16.532h1.327L7.025 4.341H5.697z"/>
-                                    </svg>
-                                </div>
-                            </li>
-                        ))}
-                        <li className="text-sm">
-                            <p className="font-medium text-gray-500 hover:text-gray-600">
-                                {product.name}
-                            </p>
-                        </li>
-                    </ol>
-                </nav>
-
+            <div className="pt-12">
                 {/* Product info */}
                 <div
                     className="mx-auto max-w-2xl px-4 pb-16 pt-6 sm:px-6 lg:grid lg:max-w-7xl lg:grid-cols-3 lg:grid-rows-[auto_auto_1fr] lg:gap-x-8 lg:px-8 lg:pb-24 lg:pt-16"
                 >
-                    {/* Image gallery */}
                     <div
                         className="lg:col-span-2 lg:col-start-1 lg:border-r lg:border-gray-200 lg:pr-8">
-                        {/* Image */}
-                        {/*<div className="mx-auto mt-6 max-w-2xl sm:px-6 lg:max-w-7xl lg:px-8 ">*/}
+                            {/* Image */}
                             <Image
-                                alt={menu.name}
+                                alt={menu[0].name}
                                 src={product.images[3].src}
                                 width={150}
                                 height={150}
@@ -149,10 +118,10 @@ export default function ProductDetail({ params }: { params: { id: number } }) {
                     {/* Options */}
                     <div className="mt-4 lg:row-span-3 lg:mt-0">
                         <div className="lg:col-span-2 lg:border-r lg:border-gray-200 lg:pr-8">
-                            <h1 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">{menu.name}</h1>
+                            <h1 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">{menu[0].name}</h1>
                         </div>
                         <h2 className="sr-only">Thông tin sản phẩm</h2>
-                        <p className="text-3xl tracking-tight text-gray-900">{menu.price}đ</p>
+                        <p className="text-3xl tracking-tight text-gray-900">{menu[0].price}đ</p>
 
                         {/* Reviews */}
                         <form className="mt-10">
@@ -170,18 +139,18 @@ export default function ProductDetail({ params }: { params: { id: number } }) {
                                     >
                                         {size.map((size) => (
                                             <Radio
-                                                key={size.name}
+                                                key={size._id}
                                                 value={size}
-                                                disabled={menu.size_id !== size._id}
+                                                disabled={!menu[0].size_id.includes(size._id)}
                                                 className={classNames(
-                                                    menu.size_id === size._id
+                                                    menu[0].size_id.includes(size._id)
                                                         ? 'cursor-pointer bg-white text-gray-900 shadow-sm'
                                                         : 'cursor-not-allowed bg-gray-50 text-gray-200',
                                                     'group relative flex items-center justify-center rounded-md border px-4 py-3 text-sm font-medium uppercase hover:bg-gray-50 focus:outline-none data-[focus]:ring-2 data-[focus]:ring-indigo-500 sm:flex-1 sm:py-6',
                                                 )}
                                             >
-                                                <span>{size.name}</span>
-                                                {menu.size_id === size._id ? (
+                                                <span>{size.size}</span>
+                                                {menu[0].size_id.includes(size._id) ? (
                                                     <span
                                                         aria-hidden="true"
                                                         className="pointer-events-none absolute -inset-px rounded-md border-2 border-transparent group-data-[focus]:border group-data-[checked]:border-amber-400"
@@ -224,16 +193,16 @@ export default function ProductDetail({ params }: { params: { id: number } }) {
                                             <Radio
                                                 key={topping.name}
                                                 value={topping}
-                                                disabled={!topping._id.includes(menu.topping_id)}
+                                                disabled={!menu[0].topping_id.includes(topping._id)}
                                                 className={classNames(
-                                                    topping._id.includes(menu.topping_id)
+                                                    menu[0].topping_id.includes(topping._id)
                                                         ? 'cursor-pointer bg-white text-gray-900 shadow-sm'
                                                         : 'cursor-not-allowed bg-gray-50 text-gray-200',
                                                     'group relative flex items-center justify-center rounded-md border px-4 py-3 text-sm font-medium uppercase hover:bg-gray-50 focus:outline-none data-[focus]:ring-2 data-[focus]:ring-amber-400 sm:flex-1 sm:py-6',
                                                 )}
                                             >
                                                 <span>{topping.name}</span>
-                                                {topping._id.includes(menu.topping_id) ? (
+                                                {menu[0].topping_id.includes(topping._id) ? (
                                                     <span
                                                         aria-hidden="true"
                                                         className="pointer-events-none absolute -inset-px rounded-md border-2 border-transparent group-data-[focus]:border group-data-[checked]:border-amber-400"
