@@ -1,5 +1,6 @@
 'use client'
 import React, {createContext, useContext, useEffect, useState} from "react";
+import Cookies from "js-cookie";
 
 interface ICartContext {
     products: IProductWithImage[];
@@ -11,14 +12,14 @@ const CartContext = createContext<ICartContext | undefined>(undefined);
 
 export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [products, setProducts] = useState<IProductWithImage[]>(() => {
-        // Lấy dữ liệu từ localStorage khi khởi tạo
-        const storedCart = localStorage.getItem("cart");
+        // Lấy dữ liệu từ Cookie khi khởi tạo
+        const storedCart = Cookies.get("cart");
         return storedCart ? JSON.parse(storedCart) : [];
     });
 
-    // Lưu vào localStorage mỗi khi sản phẩm thay đổi
+    // Lưu vào Cookie mỗi khi sản phẩm thay đổi
     useEffect(() => {
-        localStorage.setItem("cart", JSON.stringify(products));
+        Cookies.set("cart", JSON.stringify(products));
     }, [products]);
 
     const addProduct = (product: IProductWithImage) => {
