@@ -7,6 +7,7 @@ import ProductPage from "@/components/home/client.products";
 import { useEffect, useState } from "react";
 import { getMenu } from "@/utils/menuServices";
 import { getCategory } from "@/utils/categoryServices";
+import {LoadingPage} from "@/components/loading/loading.page";
 
 const HomePage = () => {
     const [menu, setMenu] = useState<IProduct[]>([]);
@@ -36,6 +37,12 @@ const HomePage = () => {
 
     console.log(loading)
     console.log(">>Check all products", menu);
+
+    if(!menu){
+        return(
+            <LoadingPage/>
+        )
+    }
 
     return (
         <>

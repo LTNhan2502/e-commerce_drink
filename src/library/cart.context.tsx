@@ -3,15 +3,15 @@ import React, {createContext, useContext, useEffect, useState} from "react";
 import Cookies from "js-cookie";
 
 interface ICartContext {
-    products: IProductWithImage[];
-    addProduct: (product: IProductWithImage) => void;
+    products: ICart[];
+    addProduct: (product: ICart) => void;
     removeProduct: (id: string) => void;
 }
 
 const CartContext = createContext<ICartContext | undefined>(undefined);
 
 export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const [products, setProducts] = useState<IProductWithImage[]>(() => {
+    const [products, setProducts] = useState<ICart[]>(() => {
         // Lấy dữ liệu từ Cookie khi khởi tạo
         const storedCart = Cookies.get("cart");
         return storedCart ? JSON.parse(storedCart) : [];
@@ -22,8 +22,29 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
         Cookies.set("cart", JSON.stringify(products));
     }, [products]);
 
-    const addProduct = (product: IProductWithImage) => {
-        setProducts((prevProducts) => [...prevProducts, product]);
+    const addProduct = (product: ICart) => {
+        setProducts((prevProduct) => {
+            // Kiểm tra xem đã có sản phẩm chỉ định trong cart chưa
+            const existingProduct = prevProduct.find((prod) =>
+                prod._id === product._id &&
+                prod.selectedSize === product.selectedSize &&
+                JSON.stringify(prod.selectedToppings) === JSON.stringify(product.selectedToppings)
+            )
+
+            // Nếu có tồn tại rồi thì tăng số lượng lên
+            if(existingProduct){
+                return prevProduct.map((prod) => prod === product ? {
+                    ...prod,
+                    quantity: prod.quantity + product.quantity,
+                    totalPrice: prod.totalPrice + product.totalPrice,
+                } : prod)
+            }
+
+        //     Nếu không tồn tại thì thêm mới
+            return [ ...prevProduct, product ]
+        })
+
+        // setProducts((prevProducts) => [...prevProducts, product]);
     };
 
     const removeProduct = (id: string) => {

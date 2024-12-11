@@ -3,8 +3,9 @@
 import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/react'
 import { XMarkIcon } from '@heroicons/react/24/outline'
 import Image from "next/image";
-import React from "react";
+import React, {useEffect, useState} from "react";
 import {useCart} from "@/library/cart.context";
+import {getTopping} from "@/utils/toppingServices";
 
 interface CartProps {
     open: boolean;
@@ -12,6 +13,23 @@ interface CartProps {
 }
 const Cart: React.FC<CartProps> = ({ open, setOpen }) => {
     const { products, removeProduct } = useCart();
+    const [allToppings, setAllToppings] = useState<ITopping[]>([]);
+
+    const totalCartPrice = products.reduce((acc, product) => acc + product.totalPrice, 0);
+
+    useEffect(() => {
+        const fetchToppings = async() => {
+            try {
+                const res = await getTopping()
+                const data = res.data
+                setAllToppings(data)
+            }catch (error){
+                console.log("Failed to fetch toppings", error)
+            }
+        }
+
+        fetchToppings()
+    }, []);
 
     return (
         <Dialog open={open} onClose={setOpen} className="relative z-50">
@@ -61,19 +79,12 @@ const Cart: React.FC<CartProps> = ({ open, setOpen }) => {
                                                         </div>
 
                                                         <div className="ml-4 flex flex-1 flex-col">
+                                                            {/* Tên và xoá đơn */}
                                                             <div>
                                                                 <div className="flex justify-between text-base font-medium text-gray-900">
                                                                     <h3>
                                                                         <p>{product.name}</p>
                                                                     </h3>
-                                                                    <p className="ml-4">{product.price}</p>
-                                                                </div>
-                                                                {/*<p className="mt-1 text-sm text-gray-500">{product.color}</p>*/}
-                                                            </div>
-                                                            <div className="flex flex-1 items-end justify-between text-sm">
-                                                                <p className="text-gray-500">X 1</p>
-
-                                                                <div className="flex">
                                                                     <button
                                                                         type="button"
                                                                         className="font-medium text-indigo-600 hover:text-indigo-500"
@@ -81,7 +92,38 @@ const Cart: React.FC<CartProps> = ({ open, setOpen }) => {
                                                                     >
                                                                         Xoá đơn
                                                                     </button>
+
                                                                 </div>
+
+                                                            </div>
+
+                                                            {/* Đơn giá và size */}
+                                                            <div className='flex justify-between items-center'>
+                                                                <p className="">{product.price}</p>
+                                                                <p className="">Size {product.selectedSize}</p>
+                                                            </div>
+
+                                                            {/* Topping */}
+                                                            <div className='flex flex-col'>
+                                                                <p className='text-sm text-gray-600'>Topping</p>
+                                                                {allToppings.length > 0 && product.selectedToppings?.length > 0 ? (
+                                                                    allToppings.map((topping) => (
+                                                                        product.selectedToppings.includes(topping._id) ? (
+                                                                            <span className='text-sm text-gray-500 ml-2' key={topping._id}>
+                                                                                {topping.name}
+                                                                            </span>
+                                                                        ) : null
+                                                                    ))
+                                                                ) : (
+                                                                    ""
+                                                                )}
+                                                            </div>
+
+                                                            {/* Số lượng và tổng */}
+                                                            <div
+                                                                className="flex flex-1 items-end justify-between text-sm">
+                                                                <p className="text-gray-500">X {product.quantity}</p>
+                                                                <p className="text-gray-500">{product.totalPrice}</p>
                                                             </div>
                                                         </div>
                                                     </li>
@@ -94,7 +136,7 @@ const Cart: React.FC<CartProps> = ({ open, setOpen }) => {
                                 <div className="border-t border-gray-200 px-4 py-6 sm:px-6">
                                     <div className="flex justify-between text-base font-medium text-gray-900">
                                         <p>Tổng giá</p>
-                                        <p>$262.00</p>
+                                        <p>{totalCartPrice}</p>
                                     </div>
                                     <p className="mt-0.5 text-sm text-gray-500">Đã tính phụ phí và giá ship.</p>
                                     <div className="mt-6">

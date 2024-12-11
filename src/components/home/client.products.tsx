@@ -7,7 +7,6 @@ import { getFile } from "@/utils/fileServices";
 
 const ProductPage: React.FC<{ category: string; products: IProduct[] }> = ({ category, products }) => {
     const [productsWithImage, setProductsWithImage] = useState<IProductWithImage[]>([]);
-    // const { addProduct } = useCart()
 
     useEffect(() => {
         const fetchImageURLs = async () => {

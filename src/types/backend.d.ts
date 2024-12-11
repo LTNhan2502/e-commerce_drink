@@ -25,6 +25,13 @@ interface IProductWithImage extends IProduct {
     imageURL?: string;
 }
 
+interface ICart extends IProductWithImage {
+    quantity: number;
+    selectedSize: string;
+    selectedToppings: Array<string>;
+    totalPrice: number;
+}
+
 interface ISize {
     _id: string;
     size: string;
