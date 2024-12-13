@@ -64,11 +64,13 @@ const ProductPage: React.FC<{ category: string; products: IProduct[] }> = ({ cat
                                 height={150}
                                 className='w-full'
                             />
-                            <div className='absolute flex justify-center items-center border-[#0bf0f4] border-solid rounded-full size-10 top-[-8px] right-[-8px] w-[80px] h-[80px] text-white font-bold text-sm rotate-[30deg] z-[5] shadow-md'>
-                                <div className='relative flex justify-center items-center border border-solid rounded-full w-[40px] h-[40px]'>
-                                    <span className='absolute text-center text-[10px] font-bold'>BEST SELLER</span>
+                            {product.isBestSeller && (
+                                <div className='absolute flex justify-center items-center border-[#0bf0f4] border-solid rounded-full size-10 top-[-8px] right-[-8px] w-[80px] h-[80px] text-white font-bold text-sm rotate-[30deg] z-[5] shadow-md'>
+                                    <div className='relative flex justify-center items-center border border-solid rounded-full w-[40px] h-[40px]'>
+                                        <span className='absolute text-center text-[10px] font-bold'>BEST SELLER</span>
+                                    </div>
                                 </div>
-                            </div>
+                            )}
                         </div>
                         <p className='font-semibold mb-2'>{product.name}</p>
                         <p className='font-semibold mb-2'>{product.price}</p>

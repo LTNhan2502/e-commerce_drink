@@ -1,6 +1,69 @@
 'use client'
 
-export default function FeedbackPage() {
+import React, { useState } from "react";
+import {postEvaluate} from "@/utils/evaluateServices";
+import {toast} from "react-toastify";
+
+const FeedbackPage = () => {
+    const [selectedStars, setSelectedStars] = useState<number>(5);
+    const [name, setName] = useState<string>('');
+    const [phone, setPhone] = useState<string>('');
+    const [content, setContent] = useState<string>('');
+    const [errors, setErrors] = useState<{ name?: string; phone?: string; content?: string }>({});
+
+    const handleStarClick = (star: number) => {
+        setSelectedStars(star);
+    };
+
+    const handleSubmit = async (e: React.FormEvent<HTMLButtonElement>) => {
+        e.preventDefault();
+
+        // Reset errors
+        const newErrors: { name?: string; phone?: string; content?: string } = {};
+
+        // Kiểm tra họ và tên
+        if (!name || !name.trim()) {
+            newErrors.name = "Vui lòng không để trống";
+        } else if (name.length < 2) {
+            newErrors.name = "Họ và tên phải từ 2 ký tự trở lên";
+        }
+
+        // Kiểm tra số điện thoại
+        if (!phone || !phone.trim()) {
+            newErrors.phone = "Vui lòng không để trống";
+        } else if (!/^0\d{9}$/.test(phone)) {
+            newErrors.phone = "Số điện thoại không hợp lệ";
+        }
+
+        // Kiểm tra nội dung
+        if (!content || !content.trim()) {
+            newErrors.content = "Vui lòng không để trống";
+        } else if (content.length > 2000) {
+            newErrors.content = "Nội dung nhận xét không được dài quá 2000 ký tự";
+        }
+
+        // Gán lỗi vào state
+        setErrors(newErrors);
+
+        // Nếu không có lỗi
+        if (Object.keys(newErrors).length === 0) {
+            console.log("Vô ròi");
+            try {
+                const res = await postEvaluate(name, phone, content, selectedStars);
+                if (res && res.statusCode === 201) {
+                    toast.success("Gửi đánh giá thành công")
+                    // Reset form
+                    setName('');
+                    setPhone('');
+                    setContent('');
+                    setSelectedStars(5);
+                }
+            } catch (error) {
+                console.log("Failed to submit", error);
+            }
+        }
+    };
+
 
     return (
         <div className="isolate bg-white px-6 py-16 sm:py-16 lg:px-8">
@@ -18,9 +81,22 @@ export default function FeedbackPage() {
             </div>
             <div className="mx-auto max-w-2xl text-center">
                 <h2 className="text-balance text-4xl font-semibold tracking-tight text-gray-900 sm:text-5xl">Trải nghiệm của bạn</h2>
-                <p className="mt-2 text-lg/8 text-gray-600"></p>
+                {/* Chọn số sao */}
+                <div className="flex items-center justify-center space-x-2 mb-4 mt-3">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                        <span
+                            key={star}
+                            onClick={() => handleStarClick(star)}
+                            className={`text-3xl cursor-pointer transition ${
+                                star <= selectedStars ? "text-yellow-400" : "text-gray-300"
+                            }`}
+                        >
+                            ★
+                        </span>
+                    ))}
+                </div>
             </div>
-            <form action="#" method="POST" className="mx-auto mt-16 max-w-xl sm:mt-20">
+            <form className="mx-auto mt-16 max-w-xl sm:mt-20">
                 <div className="grid grid-cols-1 gap-x-8 gap-y-6 sm:grid-cols-2">
                     <div className="sm:col-span-2">
                         <div className="mt-2.5">
@@ -29,22 +105,12 @@ export default function FeedbackPage() {
                                 name="full-name"
                                 type="text"
                                 autoComplete="given-name"
-                                placeholder='Họ và tên'
+                                placeholder="Họ và tên"
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
                                 className="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-amber-500"
                             />
-                        </div>
-                    </div>
-
-                    <div className="sm:col-span-2">
-                        <div className="mt-2.5">
-                            <input
-                                id="email"
-                                name="email"
-                                type="email"
-                                autoComplete="email"
-                                placeholder='Email'
-                                className="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-amber-500"
-                            />
+                            {errors.name && <p className="text-red-500 text-sm">{errors.name}</p>}
                         </div>
                     </div>
 
@@ -55,8 +121,11 @@ export default function FeedbackPage() {
                                 name="phone-number"
                                 type="text"
                                 placeholder="Số điện thoại"
+                                value={phone}
+                                onChange={(e) => setPhone(e.target.value)}
                                 className="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-amber-500"
                             />
+                            {errors.phone && <p className="text-red-500 text-sm">{errors.phone}</p>}
                         </div>
                     </div>
 
@@ -66,10 +135,12 @@ export default function FeedbackPage() {
                                 id="message"
                                 name="message"
                                 rows={4}
+                                value={content}
+                                onChange={(e) => setContent(e.target.value)}
                                 className="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-amber-500"
-                                placeholder='Nhận xét'
-                                defaultValue={''}
+                                placeholder="Nhận xét"
                             />
+                            {errors.content && <p className="text-red-500 text-sm">{errors.content}</p>}
                         </div>
                     </div>
                 </div>
@@ -77,11 +148,14 @@ export default function FeedbackPage() {
                     <button
                         type="submit"
                         className="block w-full rounded-md bg-amber-400 px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-amber-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-500"
+                        onClick={handleSubmit}
                     >
                         Gửi đánh giá
                     </button>
                 </div>
             </form>
         </div>
-    )
+    );
 }
+
+export default FeedbackPage;

@@ -9,6 +9,8 @@ interface IProduct {
     name: string;
     price: number;
     images: Array<string>;
+    isBestSeller: boolean;
+    isOutOfStock: boolean;
     __v: number;
 }
 
@@ -49,4 +51,11 @@ interface ITopping {
     updatedAt: Date;
     deleted: boolean;
     __v: number;
+}
+
+interface IFeedback {
+    username: string;
+    email: string;
+    phoneNumber: string;
+    review: string;
 }

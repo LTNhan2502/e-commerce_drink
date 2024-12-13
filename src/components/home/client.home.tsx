@@ -19,7 +19,7 @@ const HomePage = () => {
             setLoading(true);
             try {
                 const [menuRes, categoryRes] = await Promise.all([
-                    getMenu(1, 10),
+                    getMenu(1, 30),
                     getCategory(),
                 ]);
 

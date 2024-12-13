@@ -5,7 +5,7 @@ import Cookies from "js-cookie";
 interface ICartContext {
     products: ICart[];
     addProduct: (product: ICart) => void;
-    removeProduct: (id: string) => void;
+    removeProduct: (id: string, selectedSize: string, selectedToppings: string[]) => void;
 }
 
 const CartContext = createContext<ICartContext | undefined>(undefined);
@@ -33,11 +33,15 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
             // Nếu có tồn tại rồi thì tăng số lượng lên
             if(existingProduct){
-                return prevProduct.map((prod) => prod === product ? {
-                    ...prod,
-                    quantity: prod.quantity + product.quantity,
-                    totalPrice: prod.totalPrice + product.totalPrice,
-                } : prod)
+                return prevProduct.map((prod) =>
+                    prod._id === product._id &&
+                    prod.selectedSize === product.selectedSize &&
+                    JSON.stringify(prod.selectedToppings) === JSON.stringify(product.selectedToppings) ? {
+                        ...prod,
+                        quantity: prod.quantity + product.quantity,
+                        totalPrice: prod.totalPrice + product.totalPrice,
+                    } : prod
+                )
             }
 
         //     Nếu không tồn tại thì thêm mới
@@ -47,8 +51,13 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
         // setProducts((prevProducts) => [...prevProducts, product]);
     };
 
-    const removeProduct = (id: string) => {
-        setProducts((prevProducts) => prevProducts.filter((product) => product._id !== id));
+    const removeProduct = (id: string, selectedSize: string, selectedToppings: string[]) => {
+        setProducts((prevProducts) => prevProducts.filter((product) => {
+            const isSameSize = product.selectedSize === selectedSize;
+            const isSameToppings = JSON.stringify(product.selectedToppings) === JSON.stringify(selectedToppings);
+            return !(product._id === id && isSameSize && isSameToppings)
+
+        }));
     };
 
     return (

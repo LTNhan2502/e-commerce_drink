@@ -1,15 +1,24 @@
 'use client'
-import { useState } from "react";
+import {useEffect, useState} from "react";
 import Image from "next/image";
 import logo from '../../assets/logo.jpg';
 import { AiOutlineMenu, AiOutlineShoppingCart } from "react-icons/ai";
 import Link from "next/link";
 import OverlayDrawer from "@/components/overlay/overlay.drawer";
 import Cart from "@/components/cart/client.cart";
+import {useCart} from "@/library/cart.context";
 
 export default function Header() {
     const [menuOpen, setMenuOpen] = useState(false);
     const [cartOpen, setCartOpen] = useState(false);
+    const [isMounted, setIsMounted] = useState(false);
+
+    const { products } = useCart()
+
+    // Dùng cái này để không bị lỗi runtime giá trị không khớp giữa server và client
+    useEffect(() => {
+        setIsMounted(true);
+    }, []);
 
     return (
         <header className="bg-white shadow-md fixed w-full z-40 left-0 top-0">
@@ -38,7 +47,7 @@ export default function Header() {
                     <button onClick={() => setCartOpen(true)}>
                         <AiOutlineShoppingCart className="text-2xl text-gray-700" />
                         <div className="absolute -top-1 -right-2 bg-yellow-400 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
-                            1
+                            {isMounted ? products.length : 0}
                         </div>
                     </button>
                 </div>
