@@ -13,8 +13,6 @@ const ProductPage: React.FC<{ category: string; products: IProduct[] }> = ({ cat
             try {
                 const updatedProducts = await Promise.all(
                     products.map(async (product) => {
-                        console.log(">>Check product", product);
-                        
                         if (product.images && product.images.length > 0) {
                             const imageId = product.images[0];
                             const res = await getFile(imageId);
@@ -69,13 +67,13 @@ const ProductPage: React.FC<{ category: string; products: IProduct[] }> = ({ cat
                             {product.isBestSeller && (
                                 <div className='absolute flex justify-center items-center border-[#0bf0f4] border-solid rounded-full size-10 top-[-8px] right-[-8px] w-[80px] h-[80px] text-white font-bold text-sm rotate-[30deg] z-[5] shadow-md'>
                                     <div className='relative flex justify-center items-center border border-solid rounded-full w-[40px] h-[40px]'>
-                                       </div>
+                                        <span className='absolute text-center text-[10px] font-bold'>BEST SELLER</span>
+                                    </div>
                                 </div>
                             )}
                         </div>
                         <p className='font-semibold mb-2'>{product.name}</p>
-                                          <span className='absolute text-center text-[10px] font-bold'>BEST SELLER</span>
-                   <p className='font-semibold mb-2'>{product.price}</p>
+                        <p className='font-semibold mb-2'>{product.price}</p>
                     </Link>
                 ))
             ) : null}
