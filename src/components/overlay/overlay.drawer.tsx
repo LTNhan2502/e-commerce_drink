@@ -43,7 +43,7 @@ const OverlayDrawer: React.FC<DrawerProps> = ({ menuOpen, setMenuOpen }) => {
                             <div className="flex h-full flex-col overflow-y-scroll bg-white shadow-xl">
                                 <div className="relative mt-6 flex-1 px-4 sm:px-6">
                                     <div className='font-semibold w-full text-center text-lg mb-3'>
-                                        <Link href={'/'} onClick={() => setMenuOpen(false)}>Trà sữa Chương Toàn</Link>
+                                        <Link href={'/'} onClick={() => setMenuOpen(false)}>Trà sữa An tea</Link>
                                     </div>
                                     <ul>
                                         <li className="p-3 font-normal border-b-gray-300 w-full inline-block border-b border-white cursor-pointer">
