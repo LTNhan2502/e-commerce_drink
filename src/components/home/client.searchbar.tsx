@@ -4,17 +4,17 @@ import {AiOutlineDown, AiOutlineSearch} from "react-icons/ai";
 
 interface ISearchBar {
     categories: string[];
-    // onSelectCategory: (category: string) => void;
+    onScrollToCategory: (category: string) => void;
 }
 
-const SearchBar: React.FC<ISearchBar> = ({ categories }) => {
+const SearchBar: React.FC<ISearchBar> = ({ categories, onScrollToCategory }) => {
     const [isDropVisible, setIsDropVisible] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
 
     const handleCategorySelect = (category: string) => {
         setSearchQuery(category);
         setIsDropVisible(false);
-        // onSelectCategory(category);
+        onScrollToCategory(category);
         console.log(searchQuery);
     }
 
@@ -47,12 +47,15 @@ const SearchBar: React.FC<ISearchBar> = ({ categories }) => {
             {/* Dropdown overlay */}
             <div className='relative'>
                 {isDropVisible && (
-                    <div className={`fixed inset-0 z-50 w-screen flex justify-center items-end`} onClick={() => setIsDropVisible(false)}>
+                    <div
+                        className='fixed inset-0 z-50 w-screen flex justify-center items-end'
+                        onClick={() => setIsDropVisible(false)}
+                    >
                         <div className='w-full rounded-xl p-6 backdrop-blur-2xl'>
                             {categories.map((category, index) => (
                                 <button
-                                    onClick={() => handleCategorySelect(category)}
                                     key={index}
+                                    onClick={() => handleCategorySelect(category)}
                                     className='border border-gray-700 my-2 hover:border-white hover:text-white font-medium rounded-lg py-2 px-3 w-full text-center inline-block'
                                 >
                                     {category}

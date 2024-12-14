@@ -110,12 +110,17 @@ const FeedbackPage = () => {
                                 onChange={(e) => setName(e.target.value)}
                                 className="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-amber-500"
                             />
-                            {errors.name && <p className="text-red-500 text-sm">{errors.name}</p>}
+                            <p
+                                className={`text-sm ${errors.name ? "text-red-500" : "invisible"}`}
+                                style={{ minHeight: "1.25rem" }}
+                            >
+                                {errors.name || ""}
+                            </p>
                         </div>
                     </div>
 
                     <div className="sm:col-span-2">
-                        <div className="mt-2.5">
+                        <div>
                             <input
                                 id="phone-number"
                                 name="phone-number"
@@ -125,12 +130,17 @@ const FeedbackPage = () => {
                                 onChange={(e) => setPhone(e.target.value)}
                                 className="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-amber-500"
                             />
-                            {errors.phone && <p className="text-red-500 text-sm">{errors.phone}</p>}
+                            <p
+                                className={`text-sm ${errors.phone ? "text-red-500" : "invisible"}`}
+                                style={{ minHeight: "1.25rem" }}
+                            >
+                                {errors.phone || ""}
+                            </p>
                         </div>
                     </div>
 
                     <div className="sm:col-span-2">
-                        <div className="mt-2.5">
+                        <div>
                             <textarea
                                 id="message"
                                 name="message"
@@ -140,7 +150,12 @@ const FeedbackPage = () => {
                                 className="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-amber-500"
                                 placeholder="Nhận xét"
                             />
-                            {errors.content && <p className="text-red-500 text-sm">{errors.content}</p>}
+                            <p
+                                className={`text-sm ${errors.content ? "text-red-500" : "invisible"}`}
+                                style={{ minHeight: "1.25rem"}}
+                            >
+                                {errors.content || ""}
+                            </p>
                         </div>
                     </div>
                 </div>

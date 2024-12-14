@@ -8,6 +8,9 @@ import {toast} from "react-toastify";
 
 const Login = () => {
     const [formData, setFormData] = useState({})
+    // const [username, setUsername] = useState<string>("");
+    // const [password, setPassword] = useState<string>("");
+    // const [errors, setErrors] = useState<{ username?: string; password?: string }>({});
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const {name, value} = e.target;
@@ -57,6 +60,12 @@ const Login = () => {
                                     className='p-2 text-sm outline-none w-[250px]'
                                     onChange={handleChange}
                                 />
+                                {/*<p*/}
+                                {/*    className={`text-sm ${errors.username ? "text-red-500" : "text-red-500"}`}*/}
+                                {/*    style={{ minHeight: "1.25rem" }}*/}
+                                {/*>*/}
+                                {/*    {errors.username || ""}*/}
+                                {/*</p>*/}
                             </div>
                             <div className='flex justify-center items-center gap-2 relative w-max border-b-[1px] border-b-gray-400 mt-7'>
                                 <AiOutlineLock className='h-6 w-6 text-gray-500'/>
@@ -67,6 +76,12 @@ const Login = () => {
                                     className='p-2 text-sm outline-none w-[250px]'
                                     onChange={handleChange}
                                 />
+                                {/*<p*/}
+                                {/*    className={`text-sm ${errors.password ? "text-red-500" : "invisible"}`}*/}
+                                {/*    style={{ minHeight: "1.25rem" }}*/}
+                                {/*>*/}
+                                {/*    {errors.password || ""}*/}
+                                {/*</p>*/}
                             </div>
                             <button
                                 type='submit'

@@ -3,9 +3,10 @@
 import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/react'
 import { XMarkIcon } from '@heroicons/react/24/outline'
 import Image from "next/image";
-import React, {useEffect, useState} from "react";
+import React, {useContext, useEffect, useState} from "react";
 import {useCart} from "@/library/cart.context";
 import {getTopping} from "@/utils/toppingServices";
+import {CurrencyContext} from "@/library/currency.context";
 
 interface CartProps {
     open: boolean;
@@ -14,6 +15,8 @@ interface CartProps {
 const Cart: React.FC<CartProps> = ({ open, setOpen }) => {
     const { products, removeProduct } = useCart();
     const [allToppings, setAllToppings] = useState<ITopping[]>([]);
+    // Dùng dấu ! ở cuối nếu chắc chắn rằng đã dùng CurrencyWrapper bọc mở main (không bao giờ undefined)
+    const {formatCurrency} = useContext(CurrencyContext)!;
 
     const totalCartPrice = products.reduce((acc, product) => acc + product.totalPrice, 0);
 
@@ -104,7 +107,7 @@ const Cart: React.FC<CartProps> = ({ open, setOpen }) => {
 
                                                                 {/* Đơn giá và size */}
                                                                 <div className='flex justify-between items-center'>
-                                                                    <p className="">{product.price}</p>
+                                                                    <p className="">{formatCurrency(product.price)}đ</p>
                                                                     <p className="">Size {product.selectedSize}</p>
                                                                 </div>
 
@@ -128,7 +131,7 @@ const Cart: React.FC<CartProps> = ({ open, setOpen }) => {
                                                                 <div
                                                                     className="flex flex-1 items-end justify-between text-sm">
                                                                     <p className="text-gray-500">X {product.quantity}</p>
-                                                                    <p className="text-gray-500">{product.totalPrice}</p>
+                                                                    <p className="text-gray-500">{formatCurrency(product.totalPrice)}đ</p>
                                                                 </div>
                                                             </div>
                                                         </li>
@@ -143,7 +146,7 @@ const Cart: React.FC<CartProps> = ({ open, setOpen }) => {
                                     <div className="border-t border-gray-200 px-4 py-6 sm:px-6">
                                         <div className="flex justify-between text-base font-medium text-gray-900">
                                             <p>Tổng giá</p>
-                                            <p>{totalCartPrice}</p>
+                                            <p>{formatCurrency(totalCartPrice)}đ</p>
                                         </div>
                                         <p className="mt-0.5 text-sm text-gray-500">Đã tính phụ phí và giá ship.</p>
                                         <div className="mt-6">

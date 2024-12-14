@@ -1,6 +1,6 @@
 'use client'
 
-import {useEffect, useMemo, useState} from 'react'
+import {useContext, useEffect, useMemo, useState} from 'react'
 import Image from "next/image";
 import {Radio, RadioGroup} from "@headlessui/react";
 import {getSize} from "@/utils/sizeServices";
@@ -10,6 +10,7 @@ import {useCart} from "@/library/cart.context";
 import {getFile} from "@/utils/fileServices";
 import {LoadingPage} from "@/components/loading/loading.page";
 import {AiOutlineMinus, AiOutlinePlus} from "react-icons/ai";
+import {CurrencyContext} from "@/library/currency.context";
 
 function classNames(...classes: (string | undefined)[]): string {
     return classes.filter(Boolean).join(' ')
@@ -25,6 +26,8 @@ export default function ProductDetail({ params }: { params: { id: number } }) {
     const [quantity, setQuantity] = useState<number>(1)
     const [loading, setLoading] = useState(false)
     const { addProduct } = useCart()
+    // Dùng dấu ! ở cuối nếu chắc chắn rằng đã dùng CurrencyWrapper bọc mở main (không bao giờ undefined)
+    const {formatCurrency} = useContext(CurrencyContext)!
 
     const toggleTopping = (toppingId: string) => {
         setSelectedToppings((prevSelected) =>
@@ -163,7 +166,7 @@ export default function ProductDetail({ params }: { params: { id: number } }) {
                         <div className="flex justify-between items-center gap-4">
                             {/* Hiển thị giá */}
                             <span className="text-lg font-bold text-amber-500">
-                                {productWithImage.price}đ
+                                {formatCurrency(productWithImage.price)}đ
                             </span>
 
                             {/* Hiển thị ô tăng giảm số lượng */}
@@ -257,7 +260,7 @@ export default function ProductDetail({ params }: { params: { id: number } }) {
                                                 {/* Thông tin topping */}
                                                 <div>
                                                     <p className="text-base font-medium text-gray-800">{topping.name}</p>
-                                                    <p className="text-sm text-gray-500">{topping.price}đ</p>
+                                                    <p className="text-sm text-gray-500">{formatCurrency(topping.price)}đ</p>
                                                 </div>
 
                                                 {/* Checkbox */}

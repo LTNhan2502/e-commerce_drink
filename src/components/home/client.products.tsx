@@ -1,12 +1,15 @@
 'use client'
 
-import React, { useEffect, useState } from "react";
+import React, {useContext, useEffect, useState} from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { getFile } from "@/utils/fileServices";
+import {CurrencyContext} from "@/library/currency.context";
 
 const ProductPage: React.FC<{ category: string; products: IProduct[] }> = ({ category, products }) => {
     const [productsWithImage, setProductsWithImage] = useState<IProductWithImage[]>([]);
+    // Dùng dấu ! ở cuối nếu chắc chắn rằng đã dùng CurrencyWrapper bọc mở main (không bao giờ undefined)
+    const {formatCurrency} = useContext(CurrencyContext)!;
 
     useEffect(() => {
         const fetchImageURLs = async () => {
@@ -31,17 +34,6 @@ const ProductPage: React.FC<{ category: string; products: IProduct[] }> = ({ cat
         fetchImageURLs();
     }, [products]);
 
-    // const handleAddToCart = (product: IProductWithImage) => {
-    //     try {
-    //         const cartItems = JSON.parse(localStorage.getItem('cart') || '[]');
-    //         const updatedCart = [...cartItems, product];
-    //         localStorage.setItem('cart', JSON.stringify(updatedCart));
-    //         console.log("Product added to cart:", product);
-    //     } catch (error) {
-    //         console.error("Failed to add product to cart:", error);
-    //     }
-    // };
-
     return (
         <div className='flex flex-wrap me-[-0.75rem]'>
             <div className='w-full scroll-mt-28 mb-3 pe-3 font-semibold uppercase text-amber-400'>{category}</div>
@@ -51,10 +43,6 @@ const ProductPage: React.FC<{ category: string; products: IProduct[] }> = ({ cat
                         href={`product/${product._id}`}
                         key={product._id}
                         className='w-1/2 pe-3 mb-3 last:mb-16'
-                        // onClick={(e) => {
-                        //     e.preventDefault();
-                        //     // addProduct(product);
-                        // }}
                     >
                         <div className='rounded-lg w-full mb-2 overflow-hidden relative'>
                             <Image
@@ -73,7 +61,7 @@ const ProductPage: React.FC<{ category: string; products: IProduct[] }> = ({ cat
                             )}
                         </div>
                         <p className='font-semibold mb-2'>{product.name}</p>
-                        <p className='font-semibold mb-2'>{product.price}</p>
+                        <p className='font-semibold mb-2'>{formatCurrency(product.price)}đ</p>
                     </Link>
                 ))
             ) : null}
