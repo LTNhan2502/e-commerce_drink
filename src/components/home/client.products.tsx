@@ -61,7 +61,7 @@ const ProductPage: React.FC<{ category: string; products: IProduct[] }> = ({ cat
                             )}
                         </div>
                         <p className='font-semibold mb-2'>{product.name}</p>
-                        <p className='font-semibold mb-2'>{formatCurrency(product.price)}đ</p>
+                        <p className='font-semibold mb-2'>{formatCurrency(product.size[0].price)}đ</p>
                     </Link>
                 ))
             ) : null}

@@ -107,7 +107,12 @@ const Cart: React.FC<CartProps> = ({ open, setOpen }) => {
 
                                                                 {/* Đơn giá và size */}
                                                                 <div className='flex justify-between items-center'>
-                                                                    <p className="">{formatCurrency(product.price)}đ</p>
+                                                                    <p className="">
+                                                                        {product.size.map((prod) => (
+                                                                            prod.isSelected &&
+                                                                            <p key={prod._id}>{formatCurrency(prod.price)}đ</p>
+                                                                        ))}
+                                                                    </p>
                                                                     <p className="">Size {product.selectedSize}</p>
                                                                 </div>
 

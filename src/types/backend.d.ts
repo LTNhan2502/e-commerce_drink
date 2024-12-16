@@ -7,11 +7,18 @@ interface IProduct {
     updatedAt: Date;
     deleted: boolean;
     name: string;
-    price: number;
+    size: Array<ISize>;
     images: Array<string>;
     isBestSeller: boolean;
     isOutOfStock: boolean;
     __v: number;
+}
+
+interface ISize {
+    _id: string;
+    size: string;
+    price: number;
+    isSelected: boolean;
 }
 
 interface ICategory {

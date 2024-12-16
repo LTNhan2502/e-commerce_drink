@@ -10,4 +10,9 @@ const getOneSize = async (id) => {
    return res.data;
 };
 
-export { getSize, getOneSize }; 
+const changeSize = async (id) => {
+   const res = await axiosClient.post(`/size/${id}`);
+   return res.data;
+}
+
+export { getSize, getOneSize, changeSize };

@@ -1,6 +1,6 @@
 'use client'
 
-import {useContext, useEffect, useMemo, useState} from 'react'
+import React, {useContext, useEffect, useMemo, useState} from 'react'
 import Image from "next/image";
 import {Radio, RadioGroup} from "@headlessui/react";
 import {getSize} from "@/utils/sizeServices";
@@ -11,10 +11,11 @@ import {getFile} from "@/utils/fileServices";
 import {LoadingPage} from "@/components/loading/loading.page";
 import {AiOutlineMinus, AiOutlinePlus} from "react-icons/ai";
 import {CurrencyContext} from "@/library/currency.context";
+import TakeNotePage from "@/components/detail/client.detail.product";
 
-function classNames(...classes: (string | undefined)[]): string {
-    return classes.filter(Boolean).join(' ')
-}
+// function classNames(...classes: (string | undefined)[]): string {
+//     return classes.filter(Boolean).join(' ')
+// }
 
 export default function ProductDetail({ params }: { params: { id: number } }) {
     const [selectedSize, setSelectedSize] = useState<{ size: string }>({ size: '' })
@@ -28,6 +29,14 @@ export default function ProductDetail({ params }: { params: { id: number } }) {
     const { addProduct } = useCart()
     // Dùng dấu ! ở cuối nếu chắc chắn rằng đã dùng CurrencyWrapper bọc mở main (không bao giờ undefined)
     const {formatCurrency} = useContext(CurrencyContext)!
+
+    // const handleSizeChange = async (selectedSize: string) => {
+    //     try {
+    //         const res = await
+    //     }catch(error){
+    //         console.log("Failed to change size", error)
+    //     }
+    // }
 
     const toggleTopping = (toppingId: string) => {
         setSelectedToppings((prevSelected) =>
@@ -72,7 +81,7 @@ export default function ProductDetail({ params }: { params: { id: number } }) {
             0
         )
 
-        return calculateTotalPrice(productWithImage?.price || 0, quantity, toppingsPrice)
+        return calculateTotalPrice(productWithImage?.size[0]?.price || 0, quantity, toppingsPrice)
     }, [productWithImage, selectedToppings, quantity, topping])
 
     // Lấy thông tin của sản phẩm
@@ -139,7 +148,7 @@ export default function ProductDetail({ params }: { params: { id: number } }) {
     return (
         <div className="bg-white">
             <div className="pt-12">
-                {/* Product info */}
+                {/* Ảnh */}
                 <div
                     className="mx-auto max-w-2xl px-4 pb-16 pt-6 sm:px-6 lg:grid lg:max-w-7xl lg:grid-cols-3 lg:grid-rows-[auto_auto_1fr] lg:gap-x-8 lg:px-8 lg:pb-24 lg:pt-16"
                 >
@@ -156,7 +165,7 @@ export default function ProductDetail({ params }: { params: { id: number } }) {
                         {/*</div>*/}
                     </div>
 
-                    {/* Size */}
+                    {/* Thông tin sản phẩm */}
                     <div className="mt-4 lg:row-span-3 lg:mt-0">
                         <div className="lg:col-span-2 lg:border-r lg:border-gray-200 lg:pr-8">
                             <h1 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">{productWithImage.name}</h1>
@@ -166,7 +175,7 @@ export default function ProductDetail({ params }: { params: { id: number } }) {
                         <div className="flex justify-between items-center gap-4">
                             {/* Hiển thị giá */}
                             <span className="text-lg font-bold text-amber-500">
-                                {formatCurrency(productWithImage.price)}đ
+                                {formatCurrency(productWithImage.size[0].price)}đ
                             </span>
 
                             {/* Hiển thị ô tăng giảm số lượng */}
@@ -190,7 +199,7 @@ export default function ProductDetail({ params }: { params: { id: number } }) {
                             </div>
                         </div>
 
-                        {/* Reviews */}
+                        {/* Overview */}
                         <form className="mt-10">
                             {/* Sizes */}
                             <div className="mt-10">
@@ -204,40 +213,19 @@ export default function ProductDetail({ params }: { params: { id: number } }) {
                                         onChange={setSelectedSize}
                                         className="grid grid-cols-4 gap-4 sm:grid-cols-8 lg:grid-cols-4"
                                     >
-                                        {size.map((size) => (
+                                        {productWithImage.size.map((size) => (
                                             <Radio
                                                 key={size._id}
                                                 value={size}
-                                                disabled={!productWithImage.size_id.includes(size._id)}
-                                                className={classNames(
-                                                    productWithImage.size_id.includes(size._id)
-                                                        ? 'cursor-pointer bg-white text-gray-900 shadow-sm'
-                                                        : 'cursor-not-allowed bg-gray-50 text-gray-200',
-                                                    'group relative flex items-center justify-center rounded-md border px-4 py-3 text-sm font-medium uppercase hover:bg-gray-50 focus:outline-none data-[focus]:ring-2 data-[focus]:ring-indigo-500 sm:flex-1 sm:py-6',
-                                                )}
+                                                className={`cursor-pointer bg-white text-gray-900 shadow-sm group relative flex items-center justify-center rounded-md border px-4 py-3 text-sm font-medium uppercase hover:bg-gray-50 focus:outline-none data-[focus]:ring-2 data-[focus]:ring-indigo-500 sm:flex-1 sm:py-6
+                                                    ${size.isSelected && 'border-amber-400 border-2'}
+                                                `}
                                             >
                                                 <span>{size.size}</span>
-                                                {productWithImage.size_id.includes(size._id) ? (
-                                                    <span
-                                                        aria-hidden="true"
-                                                        className="pointer-events-none absolute -inset-px rounded-md border-2 border-transparent group-data-[focus]:border group-data-[checked]:border-amber-400"
-                                                    />
-                                                ) : (
-                                                    <span
-                                                        aria-hidden="true"
-                                                        className="pointer-events-none absolute -inset-px rounded-md border-2 border-gray-200"
-                                                    >
-                                                        <svg
-                                                            stroke="currentColor"
-                                                            viewBox="0 0 100 100"
-                                                            preserveAspectRatio="none"
-                                                            className="absolute inset-0 size-full stroke-2 text-gray-200"
-                                                        >
-                                                            <line x1={0} x2={100} y1={100} y2={0}
-                                                                  vectorEffect="non-scaling-stroke"/>
-                                                        </svg>
-                                                    </span>
-                                                )}
+                                                <span
+                                                    aria-hidden="true"
+                                                    className="pointer-events-none absolute -inset-px rounded-md border-2 border-transparent group-data-[focus]:border group-data-[checked]:border-amber-400"
+                                                />
                                             </Radio>
                                         ))}
                                     </RadioGroup>
@@ -250,7 +238,7 @@ export default function ProductDetail({ params }: { params: { id: number } }) {
                                     <h3 className="text-sm font-medium text-gray-900">Topping</h3>
                                 </div>
 
-                                <fieldset aria-label="Choose a size" className="mt-4">
+                                <fieldset aria-label="Choose toppings" className="mt-4">
                                     <div className="space-y-4">
                                         {topping.map((topping) => (
                                             <label
@@ -276,17 +264,18 @@ export default function ProductDetail({ params }: { params: { id: number } }) {
                                 </fieldset>
                             </div>
 
-                                <button
-                                    type="submit"
-                                    className="mt-10 flex w-full items-center justify-center rounded-md border border-transparent bg-amber-400 px-8 py-3 text-base font-medium text-white hover:bg-amber-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                                    onClick={() => handleAddToCart(productWithImage)}
-                                >
+                            {/* Ghi chú */}
+                            <TakeNotePage/>
+
+                            <button
+                                type="submit"
+                                className="mt-10 flex w-full items-center justify-center rounded-md border border-transparent bg-amber-400 px-8 py-3 text-base font-medium text-white hover:bg-amber-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                                onClick={() => handleAddToCart(productWithImage)}
+                            >
                                 Thêm vào giỏ hàng
                             </button>
                         </form>
                     </div>
-
-
                 </div>
             </div>
         </div>
