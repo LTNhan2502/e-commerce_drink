@@ -17,26 +17,28 @@ import TakeNotePage from "@/components/detail/client.detail.product";
 //     return classes.filter(Boolean).join(' ')
 // }
 
+interface ISelectedSize {
+    _id: string;
+    size: string;
+    price: number;
+    isSelected?: boolean;
+}
+
 export default function ProductDetail({ params }: { params: { id: number } }) {
-    const [selectedSize, setSelectedSize] = useState<{ size: string }>({ size: '' })
     const [selectedToppings, setSelectedToppings] = useState<string[]>([])
     const [menu, setMenu] = useState<IProduct | null>(null)
     const [productWithImage, setProductWithImage] = useState<IProductWithImage | null>(null)
+    const [selectedSize, setSelectedSize] = useState<ISelectedSize>(
+        productWithImage ? productWithImage.size[0] : { _id: '', size: '', price: 0 }
+    );
     const [size, setSize] = useState<ISize[]>([])
     const [topping, setTopping] = useState<ITopping[]>([])
     const [quantity, setQuantity] = useState<number>(1)
     const [loading, setLoading] = useState(false)
+    const [noteContent, setNoteContent] = useState('');
     const { addProduct } = useCart()
     // Dùng dấu ! ở cuối nếu chắc chắn rằng đã dùng CurrencyWrapper bọc mở main (không bao giờ undefined)
     const {formatCurrency} = useContext(CurrencyContext)!
-
-    // const handleSizeChange = async (selectedSize: string) => {
-    //     try {
-    //         const res = await
-    //     }catch(error){
-    //         console.log("Failed to change size", error)
-    //     }
-    // }
 
     const toggleTopping = (toppingId: string) => {
         setSelectedToppings((prevSelected) =>
@@ -60,7 +62,8 @@ export default function ProductDetail({ params }: { params: { id: number } }) {
         return (price * quantity + toppingsPrice)
     }
 
-    const handleAddToCart = (product: IProductWithImage) => {
+    const handleAddToCart = (product: IProductWithImage, e: React.FormEvent<HTMLButtonElement>) => {
+        e.preventDefault();
         if(!product) return;
 
         const cartItem = {
@@ -69,6 +72,7 @@ export default function ProductDetail({ params }: { params: { id: number } }) {
             selectedSize: selectedSize.size,
             selectedToppings,
             totalPrice,
+            note: noteContent,
         }
         console.log(">>Check cartItem", cartItem)
         addProduct(cartItem)
@@ -81,7 +85,14 @@ export default function ProductDetail({ params }: { params: { id: number } }) {
             0
         )
 
-        return calculateTotalPrice(productWithImage?.size[0]?.price || 0, quantity, toppingsPrice)
+        const selectedPrice = productWithImage?.size
+            .filter((prod) => prod.isSelected)
+            .map((prod) => prod.price)
+            // Tính tổng giá
+            .reduce((acc, price) => acc + price, 0);
+
+        return calculateTotalPrice(selectedPrice || 0, quantity, toppingsPrice);
+
     }, [productWithImage, selectedToppings, quantity, topping])
 
     // Lấy thông tin của sản phẩm
@@ -132,11 +143,16 @@ export default function ProductDetail({ params }: { params: { id: number } }) {
         fetchImageURL();
     }, [menu])
 
+    // Gán giá trị size đầu tiên khi vừa vào trang
+    useEffect(() => {
+        if (productWithImage && productWithImage.size.length > 0) {
+            setSelectedSize(productWithImage.size[0]);
+        }
+    }, [productWithImage]);
+
     console.log(menu, size, topping)
-    console.log(">>Check params", params.id)
     console.log(loading)
-    console.log(">>Check menu", productWithImage)
-    console.log(">>Check selected toppings", selectedToppings)
+    console.log(">>Check productWithImage", productWithImage)
     console.log(">>Check selected size", selectedSize)
 
     if(!productWithImage){
@@ -175,7 +191,7 @@ export default function ProductDetail({ params }: { params: { id: number } }) {
                         <div className="flex justify-between items-center gap-4">
                             {/* Hiển thị giá */}
                             <span className="text-lg font-bold text-amber-500">
-                                {formatCurrency(productWithImage.size[0].price)}đ
+                                {formatCurrency(selectedSize.price)}đ
                             </span>
 
                             {/* Hiển thị ô tăng giảm số lượng */}
@@ -218,7 +234,7 @@ export default function ProductDetail({ params }: { params: { id: number } }) {
                                                 key={size._id}
                                                 value={size}
                                                 className={`cursor-pointer bg-white text-gray-900 shadow-sm group relative flex items-center justify-center rounded-md border px-4 py-3 text-sm font-medium uppercase hover:bg-gray-50 focus:outline-none data-[focus]:ring-2 data-[focus]:ring-indigo-500 sm:flex-1 sm:py-6
-                                                    ${size.isSelected && 'border-amber-400 border-2'}
+                                                    ${selectedSize._id === size._id && 'border-amber-400 border-2'}
                                                 `}
                                             >
                                                 <span>{size.size}</span>
@@ -265,12 +281,12 @@ export default function ProductDetail({ params }: { params: { id: number } }) {
                             </div>
 
                             {/* Ghi chú */}
-                            <TakeNotePage/>
+                            <TakeNotePage noteContent={noteContent} setNoteContent={setNoteContent}/>
 
                             <button
                                 type="submit"
                                 className="mt-10 flex w-full items-center justify-center rounded-md border border-transparent bg-amber-400 px-8 py-3 text-base font-medium text-white hover:bg-amber-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                                onClick={() => handleAddToCart(productWithImage)}
+                                onClick={(e) => handleAddToCart(productWithImage, e)}
                             >
                                 Thêm vào giỏ hàng
                             </button>

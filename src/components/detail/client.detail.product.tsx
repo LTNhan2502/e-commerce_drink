@@ -3,8 +3,12 @@ import React, { useState } from 'react';
 import { AiOutlineCalendar } from 'react-icons/ai';
 import Modal from 'react-modal';
 
-const TakeNotePage = () => {
-    const [noteContent, setNoteContent] = useState('');
+interface INote {
+    noteContent: string;
+    setNoteContent: (note: string) => void;
+}
+
+const TakeNotePage: React.FC<INote> = ({ noteContent, setNoteContent }) => {
     const [modalNote, setModalNote] = useState('');
     const [isOpenModal, setIsOpenModal] = useState(false);
 

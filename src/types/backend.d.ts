@@ -32,6 +32,7 @@ interface ICategory {
 
 interface IProductWithImage extends IProduct {
     imageURL?: string;
+    note?: string;
 }
 
 interface ICart extends IProductWithImage {
@@ -65,4 +66,14 @@ interface IFeedback {
     email: string;
     phoneNumber: string;
     review: string;
+}
+
+interface IPopupPosition {
+    top: number;
+}
+
+interface ISelectedPopup {
+    _id: string;
+    selectedSize: string;
+    selectedToppings: string[];
 }

@@ -25,6 +25,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const addProduct = (product: ICart) => {
         setProducts((prevProduct) => {
             // Kiểm tra xem đã có sản phẩm chỉ định trong cart chưa
+            // Kiểm tra có trùng id + size + topping không
             const existingProduct = prevProduct.find((prod) =>
                 prod._id === product._id &&
                 prod.selectedSize === product.selectedSize &&

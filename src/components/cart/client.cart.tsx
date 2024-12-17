@@ -3,20 +3,52 @@
 import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/react'
 import { XMarkIcon } from '@heroicons/react/24/outline'
 import Image from "next/image";
-import React, {useContext, useEffect, useState} from "react";
+import React, {useContext, useEffect, useRef, useState} from "react";
 import {useCart} from "@/library/cart.context";
 import {getTopping} from "@/utils/toppingServices";
 import {CurrencyContext} from "@/library/currency.context";
+import PopUp from "@/components/cart/client.popup.note";
 
 interface CartProps {
     open: boolean;
     setOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
+
 const Cart: React.FC<CartProps> = ({ open, setOpen }) => {
     const { products, removeProduct } = useCart();
     const [allToppings, setAllToppings] = useState<ITopping[]>([]);
+    const [popupInfo, setPopupInfo] = useState<{
+        popupID: ISelectedPopup | null;
+        productRef: HTMLDivElement | null;
+    }>({ popupID: null, productRef: null });
+    // Tạo một object để lưu ref của từng sản phẩm
+    const productRefs = useRef<Record<string, HTMLDivElement | null>>({});
     // Dùng dấu ! ở cuối nếu chắc chắn rằng đã dùng CurrencyWrapper bọc mở main (không bao giờ undefined)
     const {formatCurrency} = useContext(CurrencyContext)!;
+
+    const handleOpenPopup = (
+        _id: string,
+        selectedSize: string,
+        selectedToppings: string[],
+        productRef: HTMLDivElement | null
+    ) => {
+        // Nếu popup đã mở cho sản phẩm này thì đóng nó lại, ngược lại
+        if(
+            popupInfo.popupID &&
+            popupInfo.popupID._id === _id &&
+            popupInfo.popupID.selectedSize === selectedSize &&
+            JSON.stringify(popupInfo.popupID.selectedToppings) === JSON.stringify(selectedToppings)
+        ){
+            setPopupInfo({ popupID: null, productRef: null });
+        }else if(productRef){
+            console.log("Vô handleOpenPopup nè")
+            setPopupInfo({
+                // Cần cái này để có thể mở đúng popup
+                popupID: { _id, selectedSize, selectedToppings },
+                productRef,
+            })
+        }
+    };
 
     const totalCartPrice = products.reduce((acc, product) => acc + product.totalPrice, 0);
 
@@ -33,6 +65,7 @@ const Cart: React.FC<CartProps> = ({ open, setOpen }) => {
 
         fetchToppings()
     }, []);
+
 
     return (
         <Dialog open={open} onClose={setOpen} className="relative z-50">
@@ -73,74 +106,111 @@ const Cart: React.FC<CartProps> = ({ open, setOpen }) => {
                                         <div className="mt-8">
                                             <div className="flow-root">
                                                 <ul role="list" className="-my-6 divide-y divide-gray-200">
-                                                    {products.map((product) => (
-                                                        <li key={product._id} className="flex py-6">
-                                                            <div className="size-24 shrink-0 overflow-hidden rounded-md border border-gray-200">
-                                                                <Image
-                                                                    alt={product.name}
-                                                                    src={product.imageURL as string}
-                                                                    width={150}
-                                                                    height={150}
-                                                                    className="size-full object-cover"
-                                                                    priority
-                                                                />
-                                                            </div>
+                                                    {products.map((product) => {
+                                                        const uniqueKey = `${product._id}-${product.selectedSize}-${JSON.stringify(product.selectedToppings)}`;
 
-                                                            <div className="ml-4 flex flex-1 flex-col">
-                                                                {/* Tên và xoá đơn */}
-                                                                <div>
-                                                                    <div className="flex justify-between text-base font-medium text-gray-900">
-                                                                        <h3>
-                                                                            <p>{product.name}</p>
-                                                                        </h3>
-                                                                        <button
-                                                                            type="button"
-                                                                            className="font-medium text-indigo-600 hover:text-indigo-500"
-                                                                            onClick={() => removeProduct(product._id, product.selectedSize, product.selectedToppings)}
-                                                                        >
-                                                                            Xoá đơn
-                                                                        </button>
+                                                        return (
+                                                            <li key={uniqueKey} className="flex py-6 items-center">
+                                                                <div
+                                                                    className="size-24 shrink-0 overflow-hidden rounded-md border border-gray-200"
+                                                                    ref={(el) => (productRefs.current[uniqueKey] = el)} // Lưu ref vào object
+                                                                >
+                                                                    <Image
+                                                                        alt={product.name}
+                                                                        src={product.imageURL as string}
+                                                                        width={150}
+                                                                        height={150}
+                                                                        className="size-full object-cover"
+                                                                        priority
+                                                                    />
+                                                                </div>
+
+                                                                <div className="ml-4 flex flex-1 flex-col">
+                                                                    {/* Tên và xoá đơn */}
+                                                                    <div>
+                                                                        <div
+                                                                            className="flex justify-between text-base font-medium text-gray-900">
+                                                                            <h3>
+                                                                                <p>{product.name}</p>
+                                                                            </h3>
+                                                                            <button
+                                                                                type="button"
+                                                                                className="font-medium text-indigo-600 hover:text-indigo-500"
+                                                                                onClick={() => removeProduct(product._id, product.selectedSize, product.selectedToppings)}
+                                                                            >
+                                                                                Xoá đơn
+                                                                            </button>
+
+                                                                        </div>
 
                                                                     </div>
 
-                                                                </div>
+                                                                    {/* Đơn giá và size */}
+                                                                    <div className='flex justify-between items-center'>
+                                                                        <p className="">
+                                                                            {product.size.map((prod) => (
+                                                                                prod.isSelected &&
+                                                                                <p key={prod._id}>{formatCurrency(prod.price)}đ</p>
+                                                                            ))}
+                                                                        </p>
+                                                                        <p className="">Size {product.selectedSize}</p>
+                                                                    </div>
 
-                                                                {/* Đơn giá và size */}
-                                                                <div className='flex justify-between items-center'>
-                                                                    <p className="">
-                                                                        {product.size.map((prod) => (
-                                                                            prod.isSelected &&
-                                                                            <p key={prod._id}>{formatCurrency(prod.price)}đ</p>
-                                                                        ))}
-                                                                    </p>
-                                                                    <p className="">Size {product.selectedSize}</p>
-                                                                </div>
-
-                                                                {/* Topping */}
-                                                                <div className='flex flex-col'>
-                                                                    <p className='text-sm text-gray-600'>Topping</p>
-                                                                    {allToppings.length > 0 && product.selectedToppings?.length > 0 ? (
-                                                                        allToppings.map((topping) => (
-                                                                            product.selectedToppings.includes(topping._id) ? (
-                                                                                <span className='text-sm text-gray-500 ml-2' key={topping._id}>
+                                                                    {/* Topping */}
+                                                                    <div className='flex flex-col'>
+                                                                        <p className='text-sm text-gray-600'>Topping</p>
+                                                                        {allToppings.length > 0 && product.selectedToppings?.length > 0 ? (
+                                                                            allToppings.map((topping) => (
+                                                                                product.selectedToppings.includes(topping._id) ? (
+                                                                                    <span
+                                                                                        className='text-sm text-gray-500 ml-2'
+                                                                                        key={topping._id}>
                                                                                     {topping.name}
                                                                                 </span>
-                                                                            ) : null
-                                                                        ))
-                                                                    ) : (
-                                                                        ""
-                                                                    )}
-                                                                </div>
+                                                                                ) : null
+                                                                            ))
+                                                                        ) : (
+                                                                            ""
+                                                                        )}
+                                                                    </div>
 
-                                                                {/* Số lượng và tổng */}
-                                                                <div
-                                                                    className="flex flex-1 items-end justify-between text-sm">
-                                                                    <p className="text-gray-500">X {product.quantity}</p>
-                                                                    <p className="text-gray-500">{formatCurrency(product.totalPrice)}đ</p>
+                                                                    {/* Số lượng, tổng tiền và xem ghi chú */}
+                                                                    <div
+                                                                        className="flex flex-1 items-end justify-between text-sm">
+                                                                        <div>
+                                                                            <p className="text-gray-500">X {product.quantity}</p>
+                                                                            <p
+                                                                                className='text-indigo-600 hover:text-indigo-500 text-xs cursor-pointer'
+                                                                                onClick={() => handleOpenPopup(
+                                                                                    product._id,
+                                                                                    product.selectedSize,
+                                                                                    product.selectedToppings,
+                                                                                    productRefs.current[uniqueKey] // Truyền ref cụ thể của sản phẩm
+                                                                                )}
+                                                                            >
+                                                                                Xem ghi chú
+                                                                            </p>
+                                                                            {popupInfo.popupID &&
+                                                                                popupInfo.popupID._id === product._id &&
+                                                                                popupInfo.popupID.selectedSize === product.selectedSize &&
+                                                                                JSON.stringify(popupInfo.popupID.selectedToppings) === JSON.stringify(product.selectedToppings) && (
+                                                                                    <PopUp
+                                                                                        noteContent={product.note || 'Không có ghi chú'}
+                                                                                        isOpen
+                                                                                        setIsOpen={() => setPopupInfo({
+                                                                                            popupID: null,
+                                                                                            productRef: null
+                                                                                        })}
+                                                                                        productRef={popupInfo.productRef}
+                                                                                    />
+                                                                                )}
+                                                                        </div>
+                                                                        <p className="text-gray-500">{formatCurrency(product.totalPrice)}đ</p>
+                                                                    </div>
                                                                 </div>
-                                                            </div>
-                                                        </li>
-                                                    ))}
+                                                            </li>
+                                                        )
+                                                    })}
                                                 </ul>
                                             </div>
                                         </div>
@@ -148,7 +218,7 @@ const Cart: React.FC<CartProps> = ({ open, setOpen }) => {
                                 </div>
 
                                 {products.length >= 1 && (
-                                    <div className="border-t border-gray-200 px-4 py-6 sm:px-6">
+                                    <div className="border-t bg-white border-gray-200 px-4 py-6 sm:px-6 z-50">
                                         <div className="flex justify-between text-base font-medium text-gray-900">
                                             <p>Tổng giá</p>
                                             <p>{formatCurrency(totalCartPrice)}đ</p>
