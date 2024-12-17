@@ -12,6 +12,7 @@ import {LoadingPage} from "@/components/loading/loading.page";
 import {AiOutlineMinus, AiOutlinePlus} from "react-icons/ai";
 import {CurrencyContext} from "@/library/currency.context";
 import TakeNotePage from "@/components/detail/client.detail.product";
+import {toast} from "react-toastify";
 
 // function classNames(...classes: (string | undefined)[]): string {
 //     return classes.filter(Boolean).join(' ')
@@ -76,6 +77,7 @@ export default function ProductDetail({ params }: { params: { id: number } }) {
         }
         console.log(">>Check cartItem", cartItem)
         addProduct(cartItem)
+        toast.success("Thêm vào giỏ hàng thành công!")
     }
 
     // Tính tổng
