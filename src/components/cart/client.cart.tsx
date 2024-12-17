@@ -164,9 +164,10 @@ const Cart: React.FC<CartProps> = ({ open, setOpen }) => {
                                                                                 product.selectedToppings.includes(topping._id) ? (
                                                                                     <span
                                                                                         className='text-sm text-gray-500 ml-2'
-                                                                                        key={topping._id}>
-                                                                                    {topping.name}
-                                                                                </span>
+                                                                                        key={topping._id}
+                                                                                    >
+                                                                                        {topping.name}
+                                                                                    </span>
                                                                                 ) : null
                                                                             ))
                                                                         ) : (
@@ -179,23 +180,25 @@ const Cart: React.FC<CartProps> = ({ open, setOpen }) => {
                                                                         className="flex flex-1 items-end justify-between text-sm">
                                                                         <div>
                                                                             <p className="text-gray-500">X {product.quantity}</p>
-                                                                            <p
-                                                                                className='text-indigo-600 hover:text-indigo-500 text-xs cursor-pointer'
-                                                                                onClick={() => handleOpenPopup(
-                                                                                    product._id,
-                                                                                    product.selectedSize,
-                                                                                    product.selectedToppings,
-                                                                                    productRefs.current[uniqueKey] // Truyền ref cụ thể của sản phẩm
-                                                                                )}
-                                                                            >
-                                                                                Xem ghi chú
-                                                                            </p>
+                                                                            {product.note &&
+                                                                                <p
+                                                                                    className='text-indigo-600 hover:text-indigo-500 text-xs cursor-pointer'
+                                                                                    onClick={() => handleOpenPopup(
+                                                                                        product._id,
+                                                                                        product.selectedSize,
+                                                                                        product.selectedToppings,
+                                                                                        productRefs.current[uniqueKey] // Truyền ref cụ thể của sản phẩm
+                                                                                    )}
+                                                                                >
+                                                                                    Xem ghi chú
+                                                                                </p>
+                                                                            }
                                                                             {popupInfo.popupID &&
                                                                                 popupInfo.popupID._id === product._id &&
                                                                                 popupInfo.popupID.selectedSize === product.selectedSize &&
                                                                                 JSON.stringify(popupInfo.popupID.selectedToppings) === JSON.stringify(product.selectedToppings) && (
                                                                                     <PopUp
-                                                                                        noteContent={product.note || 'Không có ghi chú'}
+                                                                                        noteContent={product.note!}
                                                                                         isOpen
                                                                                         setIsOpen={() => setPopupInfo({
                                                                                             popupID: null,

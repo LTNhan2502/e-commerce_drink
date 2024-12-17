@@ -14,14 +14,16 @@ const PopUp: React.FC<IPopup> = ({ noteContent, isOpen, setIsOpen, productRef })
     useEffect(() => {
         const updatePosition = () => {
             if(productRef){
-                console.log("Vô rect nè")
+                console.log(">>Check productRef", productRef)
                 const rect = productRef.getBoundingClientRect()
                 setTop(Math.min(rect.bottom + window.scrollY, window.innerHeight - 100))
             }
         }
 
         if(isOpen){
-            updatePosition()
+            setTimeout(() => {
+                updatePosition()
+            }, 1)
             window.addEventListener("scroll", updatePosition, true)
             window.addEventListener("resize", updatePosition)
         }

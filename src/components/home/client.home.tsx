@@ -44,7 +44,7 @@ const HomePage = () => {
     console.log(loading)
     console.log(">>Check all products", menu);
 
-    if(!menu){
+    if(loading){
         return(
             <LoadingPage/>
         )
