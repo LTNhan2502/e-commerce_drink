@@ -3,7 +3,6 @@
 import React, {useContext, useEffect, useMemo, useState} from 'react'
 import Image from "next/image";
 import {Radio, RadioGroup} from "@headlessui/react";
-import {getSize} from "@/utils/sizeServices";
 import {getTopping} from "@/utils/toppingServices";
 import {getOneMenu} from "@/utils/menuServices";
 import {useCart} from "@/library/cart.context";
@@ -32,10 +31,8 @@ export default function ProductDetail({ params }: { params: { id: number } }) {
     const [selectedSize, setSelectedSize] = useState<ISelectedSize>(
         productWithImage ? productWithImage.size[0] : { _id: '', size: '', price: 0 }
     );
-    const [size, setSize] = useState<ISize[]>([])
     const [topping, setTopping] = useState<ITopping[]>([])
     const [quantity, setQuantity] = useState<number>(1)
-    const [loading, setLoading] = useState(false)
     const [noteContent, setNoteContent] = useState('');
     const { addProduct } = useCart()
     // Dùng dấu ! ở cuối nếu chắc chắn rằng đã dùng CurrencyWrapper bọc mở main (không bao giờ undefined)
@@ -88,32 +85,27 @@ export default function ProductDetail({ params }: { params: { id: number } }) {
         )
 
         const selectedPrice = productWithImage?.size
-            .filter((prod) => prod.isSelected)
+            .filter((prod) => prod.size === selectedSize.size)
             .map((prod) => prod.price)
             // Tính tổng giá
             .reduce((acc, price) => acc + price, 0);
 
         return calculateTotalPrice(selectedPrice || 0, quantity, toppingsPrice);
 
-    }, [productWithImage, selectedToppings, quantity, topping])
+    }, [productWithImage, selectedToppings, quantity, topping, selectedSize])
 
     // Lấy thông tin của sản phẩm
     useEffect(() => {
         const fetchSizeAndTopping = async() => {
-            setLoading(true)
             try {
-                const [menuRes, sizeRes, toppingRes] = await Promise.all([
+                const [menuRes, toppingRes] = await Promise.all([
                     getOneMenu(params.id),
-                    getSize(),
                     getTopping(),
                 ])
                 setMenu(menuRes.data)
-                setSize(sizeRes.data)
                 setTopping(toppingRes.data)
             }catch(error){
                 console.log("Failed to fetch size and topping", error)
-            }finally {
-                setLoading(false)
             }
         }
 
@@ -151,11 +143,6 @@ export default function ProductDetail({ params }: { params: { id: number } }) {
             setSelectedSize(productWithImage.size[0]);
         }
     }, [productWithImage]);
-
-    console.log(menu, size, topping)
-    console.log(loading)
-    console.log(">>Check productWithImage", productWithImage)
-    console.log(">>Check selected size", selectedSize)
 
     if(!productWithImage){
         return (
@@ -258,26 +245,36 @@ export default function ProductDetail({ params }: { params: { id: number } }) {
 
                                 <fieldset aria-label="Choose toppings" className="mt-4">
                                     <div className="space-y-4">
-                                        {topping.map((topping) => (
-                                            <label
-                                                key={topping._id}
-                                                className="flex items-center justify-between border-b py-3"
-                                            >
-                                                {/* Thông tin topping */}
-                                                <div>
-                                                    <p className="text-base font-medium text-gray-800">{topping.name}</p>
-                                                    <p className="text-sm text-gray-500">{formatCurrency(topping.price)}đ</p>
-                                                </div>
+                                        {productWithImage.topping_id.some((topping_id) => topping.find((item) => item._id === topping_id)) ? (
+                                            topping.map((topping) => {
+                                                const isInclude =productWithImage.topping_id.includes(topping._id)
 
-                                                {/* Checkbox */}
-                                                <input
-                                                    type="checkbox"
-                                                    checked={selectedToppings.includes(topping._id)}
-                                                    onChange={() => toggleTopping(topping._id)}
-                                                    className="h-5 w-5 appearance-none rounded border border-gray-300 focus:ring-2 focus:ring-amber-500 checked:bg-amber-500 relative checked:border-transparent checked:after:content-['✓'] checked:after:absolute checked:after:inset-0 checked:after:flex checked:after:items-center checked:after:justify-center checked:after:text-white"
-                                                />
-                                            </label>
-                                        ))}
+                                                if(isInclude){
+                                                    return (
+                                                        <label
+                                                            key={topping._id}
+                                                            className="flex items-center justify-between border-b py-3"
+                                                        >
+                                                            {/* Thông tin topping */}
+                                                            <div>
+                                                                <p className="text-base font-medium text-gray-800">{topping.name}</p>
+                                                                <p className="text-sm text-gray-500">{formatCurrency(topping.price)}đ</p>
+                                                            </div>
+
+                                                            {/* Checkbox */}
+                                                            <input
+                                                                type="checkbox"
+                                                                checked={selectedToppings.includes(topping._id)}
+                                                                onChange={() => toggleTopping(topping._id)}
+                                                                className="h-5 w-5 appearance-none rounded border border-gray-300 focus:ring-2 focus:ring-amber-500 checked:bg-amber-500 relative checked:border-transparent checked:after:content-['✓'] checked:after:absolute checked:after:inset-0 checked:after:flex checked:after:items-center checked:after:justify-center checked:after:text-white"
+                                                            />
+                                                        </label>
+                                                    )
+                                                }
+                                            })
+                                        ) : (
+                                            <span className='ml-4'>Chưa có topping đính kèm</span>
+                                        )}
                                     </div>
                                 </fieldset>
                             </div>

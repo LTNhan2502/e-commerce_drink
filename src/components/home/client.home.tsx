@@ -41,8 +41,6 @@ const HomePage = () => {
         fetchData();
     }, []);
 
-    console.log(loading)
-    console.log(">>Check all products", menu);
 
     if(loading){
         return(
@@ -77,7 +75,7 @@ const HomePage = () => {
                         <ProductPage
                             category={category.name}
                             products={menu.filter((product) =>
-                                product.category_id.includes(category._id)
+                                product.category_id.includes(category._id) && product.size.length > 0
                             )}
                         />
                     </div>

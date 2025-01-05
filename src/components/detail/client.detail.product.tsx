@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { AiOutlineCalendar } from 'react-icons/ai';
 import Modal from 'react-modal';
 
@@ -11,19 +11,31 @@ interface INote {
 const TakeNotePage: React.FC<INote> = ({ noteContent, setNoteContent }) => {
     const [modalNote, setModalNote] = useState('');
     const [isOpenModal, setIsOpenModal] = useState(false);
+    const [modalAnimation, setModalAnimation] = useState('translate-y-full');
 
     const handleOpenModal = () => {
         setIsOpenModal(true);
+        // Thêm delay để animation hoạt động mượt mà
+        setTimeout(() => {
+            setModalAnimation('translate-y-0');
+        }, 10);
     };
 
-    const handleCloseModal = () => {
-        setIsOpenModal(false);
-    };
+    const handleCloseModal = useCallback(() => {
+        setModalAnimation('translate-y-full');
+        // Đợi animation hoàn thành rồi mới đóng modal
+        setTimeout(() => {
+            setIsOpenModal(false);
+        }, 200);
+    }, []);
 
     const handleCompleteNote = (value: string) => {
-        setIsOpenModal(false);
-        setNoteContent(value);
-    }
+        setModalAnimation('translate-y-full');
+        setTimeout(() => {
+            setIsOpenModal(false);
+            setNoteContent(value);
+        }, 200);
+    };
 
     return (
         <div className="mt-10">
@@ -41,8 +53,8 @@ const TakeNotePage: React.FC<INote> = ({ noteContent, setNoteContent }) => {
             <Modal
                 isOpen={isOpenModal}
                 onRequestClose={handleCloseModal}
-                className="fixed bottom-0 left-0 w-full bg-white rounded-t-lg p-4"
-                overlayClassName="fixed inset-0 bg-black bg-opacity-50"
+                className={`fixed bottom-0 left-0 w-full bg-white rounded-t-lg p-4 transform transition-transform duration-200 ease-in-out ${modalAnimation}`}
+                overlayClassName="fixed inset-0 bg-black transition-opacity duration-200 ease-in-out bg-opacity-50 z-50"
                 ariaHideApp={false}
             >
                 <div className="flex justify-between items-center">
